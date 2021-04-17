@@ -60,16 +60,6 @@ def load_circa(args, tokenizer):
     else:
         use_labels = "goldstandard2"
 
-    # function that handles negative labels
-    def handle_labels(examples):
-        examples[use_labels] = abs(examples[use_labels])
-        return examples
-
-    # handle the labels
-    #train_set = train_set.map(handle_labels, batched=False)
-    #dev_set = dev_set.map(handle_labels, batched=False)
-    #test_set = test_set.map(handle_labels, batched=False)
-
     # set the labels
     train_set.rename_column_(use_labels, "labels")
     dev_set.rename_column_(use_labels, "labels")

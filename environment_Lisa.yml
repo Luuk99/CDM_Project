@@ -150,3 +150,5 @@ dependencies:
     - widgetsnbextension==3.5.1
     - spacy==2.3.0
     - transformers
+    - datasets
+    - sklearn
