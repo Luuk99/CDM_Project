@@ -1,17 +1,13 @@
 # imports
-from datasets import load_dataset
+from datasets import Dataset, load_dataset, concatenate_datasets
+import pandas as pd
 
 
-def load_circa(args, tokenizer):
+def load_filtered_dataset():
     """
-    Function to load the Circa dataset.
-    Inputs:
-        args - Namespace object from the argument parser
-        tokenizer - BERT tokenizer instance
+    Function that loads the Circa dataset and filters it.
     Outputs:
-        train_set - Training dataset containg 60% of the data
-        dev_set - Development dataset containg 20% of the data
-        test_set - Test dataset containg 20% of the data
+        dataset - Filtered Circa dataset
     """
 
     # load the dataset
@@ -22,12 +18,24 @@ def load_circa(args, tokenizer):
     dataset = dataset.filter(lambda example: example['goldstandard1'] != dataset.features['goldstandard1'].str2int("I am not sure how X will interpret Y’s answer"))
     dataset = dataset.filter(lambda example: example['goldstandard1'] != -1)
 
-    # split the dataset into train, dev and test
-    dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
-    train_set = dataset['train']
-    dataset = dataset['test'].train_test_split(test_size=0.5, train_size=0.5, shuffle=True)
-    dev_set = dataset['train']
-    test_set = dataset['test']
+    # return the dataset
+    return dataset
+
+
+def prepare_sets(args, tokenizer, train_set, dev_set, test_set):
+    """
+    Function that prepares the datasets for usage.
+    Inputs:
+        args - Namespace object from the argument parser
+        tokenizer - BERT tokenizer instance
+        train_set - Unprepared training set
+        dev_set - Unprepared development set
+        test_set - Unprepared test set
+    Outputs:
+        train_set - Prepared training set
+        dev_set - Prepared development set
+        test_set - Prepared test set
+    """
 
     # function that encodes the questions and answers using the tokenizer
     def encode_qa(examples):
@@ -46,7 +54,7 @@ def load_circa(args, tokenizer):
         encode_fn = encode_qa
     elif args.model_version == "A":
         encode_fn = encode_a
-    else:
+    elif args.model_version == 'Q':
         encode_fn = encode_q
 
     # tokenize the datasets
@@ -64,6 +72,108 @@ def load_circa(args, tokenizer):
     train_set.rename_column_(use_labels, "labels")
     dev_set.rename_column_(use_labels, "labels")
     test_set.rename_column_(use_labels, "labels")
+
+    # remove unnecessary columns
+    if args.labels == 'strict':
+        remove_gold_label = 'goldstandard2'
+    else:
+        remove_gold_label = 'goldstandard1'
+    train_set = train_set.remove_columns(['answer-Y', 'canquestion-X', 'context', remove_gold_label, 'judgements', 'question-X'])
+    dev_set = dev_set.remove_columns(['answer-Y', 'canquestion-X', 'context', remove_gold_label, 'judgements', 'question-X'])
+    test_set = test_set.remove_columns(['answer-Y', 'canquestion-X', 'context', remove_gold_label, 'judgements', 'question-X'])
+
+    # return the prepared datasets
+    return train_set, dev_set, test_set
+
+
+def load_circa_matched(args, tokenizer):
+    """
+    Function to load the Circa dataset for the matched setting.
+    Inputs:
+        args - Namespace object from the argument parser
+        tokenizer - BERT tokenizer instance
+    Outputs:
+        train_set - Training dataset containing 60% of the data
+        dev_set - Development dataset containing 20% of the data
+        test_set - Test dataset containing 20% of the data
+    """
+
+    # load the filtered dataset
+    dataset = load_filtered_dataset()
+
+    # split the dataset into train, dev and test
+    dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
+    train_set = dataset['train']
+    dataset = dataset['test'].train_test_split(test_size=0.5, train_size=0.5, shuffle=True)
+    dev_set = dataset['train']
+    test_set = dataset['test']
+
+    # prepare the data
+    train_set, dev_set, test_set = prepare_sets(args, tokenizer, train_set, dev_set, test_set)
+
+    # return the datasets
+    return train_set, dev_set, test_set
+
+
+def load_circa_unmatched(args, tokenizer, test_scenario, dev_scenario):
+    """
+    Function to load the Circa dataset for the unmatched setting.
+    Inputs:
+        args - Namespace object from the argument parser
+        tokenizer - BERT tokenizer instance
+        test_scenario - Scenario to reserve for testing
+        dev_scenario - Scenario to reserve for development
+    Outputs:
+        train_set - Training dataset containing 8 scenarios
+        dev_set - Development dataset containing 1 scenario
+        test_set - Test dataset containing 1 scenario
+    """
+
+    # load the filtered dataset
+    dataset = load_filtered_dataset()
+
+    # create the test, dev and train sets
+    test_set = dataset.filter(lambda example: example['context'] == test_scenario)
+    dev_set = dataset.filter(lambda example: example['context'] == dev_scenario)
+    train_set = dataset.filter(lambda example: example['context'] != test_scenario)
+    train_set = train_set.filter(lambda example: example['context'] != dev_scenario)
+
+    # prepare the data
+    train_set, dev_set, test_set = prepare_sets(args, tokenizer, train_set, dev_set, test_set)
+
+    # return the datasets
+    return train_set, dev_set, test_set
+
+
+def load_mtl_data(args, tokenizer):
+    """
+    Function that loads the multitask dataset.
+    Inputs:
+        args - Namespace object from the argument parser
+        tokenizer - BERT tokenizer instance
+    Outputs:
+        train_set - Training dataset containing 60% of the data
+        dev_set - Development dataset containing 20% of the data
+        test_set - Test dataset containing 20% of the data
+    """
+
+    # load the filtered dataset
+    dataset = load_filtered_dataset()
+
+    # split the dataset into train, dev and test
+    dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
+    train_set = dataset['train']
+    dataset = dataset['test'].train_test_split(test_size=0.5, train_size=0.5, shuffle=True)
+    dev_set = dataset['train']
+    test_set = dataset['test']
+
+    # prepare the data
+    train_set, dev_set, test_set = prepare_sets(args, tokenizer, train_set, dev_set, test_set)
+
+    # add the task index
+    train_set = train_set.map(lambda example: {'task_idx': 0})
+    dev_set = dev_set.map(lambda example: {'task_idx': 0})
+    test_set = test_set.map(lambda example: {'task_idx': 0})
 
     # return the datasets
     return train_set, dev_set, test_set
