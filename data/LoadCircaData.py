@@ -1,6 +1,12 @@
 # imports
-from datasets import Dataset, load_dataset, concatenate_datasets
-import pandas as pd
+from datasets import load_dataset
+
+# own imports
+from utils import create_dataloader
+
+# set Huggingface logging to error only
+import datasets
+datasets.logging.set_verbosity_error()
 
 
 def load_filtered_dataset():
@@ -39,7 +45,7 @@ def prepare_sets(args, tokenizer, train_set, dev_set, test_set):
 
     # function that encodes the questions and answers using the tokenizer
     def encode_qa(examples):
-         return tokenizer(examples['question-X'], examples['answer-Y'], truncation=True, padding='max_length')
+         return tokenizer(examples['question-X'] + ' [SEP] ' + examples['answer-Y'], truncation=True, padding='max_length')
 
     # function that encodes only the questions using the tokenizer
     def encode_q(examples):
@@ -69,9 +75,9 @@ def prepare_sets(args, tokenizer, train_set, dev_set, test_set):
         use_labels = "goldstandard2"
 
     # set the labels
-    train_set.rename_column_(use_labels, "labels")
-    dev_set.rename_column_(use_labels, "labels")
-    test_set.rename_column_(use_labels, "labels")
+    train_set = train_set.rename_column(use_labels, "labels")
+    dev_set = dev_set.rename_column(use_labels, "labels")
+    test_set = test_set.rename_column(use_labels, "labels")
 
     # remove unnecessary columns
     if args.labels == 'strict':
@@ -111,6 +117,11 @@ def load_circa_matched(args, tokenizer):
     # prepare the data
     train_set, dev_set, test_set = prepare_sets(args, tokenizer, train_set, dev_set, test_set)
 
+    # create dataloaders for the datasets
+    train_set = create_dataloader(args, train_set, tokenizer)
+    dev_set = create_dataloader(args, dev_set, tokenizer)
+    test_set = create_dataloader(args, test_set, tokenizer)
+
     # return the datasets
     return train_set, dev_set, test_set
 
@@ -141,39 +152,10 @@ def load_circa_unmatched(args, tokenizer, test_scenario, dev_scenario):
     # prepare the data
     train_set, dev_set, test_set = prepare_sets(args, tokenizer, train_set, dev_set, test_set)
 
-    # return the datasets
-    return train_set, dev_set, test_set
-
-
-def load_mtl_data(args, tokenizer):
-    """
-    Function that loads the multitask dataset.
-    Inputs:
-        args - Namespace object from the argument parser
-        tokenizer - BERT tokenizer instance
-    Outputs:
-        train_set - Training dataset containing 60% of the data
-        dev_set - Development dataset containing 20% of the data
-        test_set - Test dataset containing 20% of the data
-    """
-
-    # load the filtered dataset
-    dataset = load_filtered_dataset()
-
-    # split the dataset into train, dev and test
-    dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
-    train_set = dataset['train']
-    dataset = dataset['test'].train_test_split(test_size=0.5, train_size=0.5, shuffle=True)
-    dev_set = dataset['train']
-    test_set = dataset['test']
-
-    # prepare the data
-    train_set, dev_set, test_set = prepare_sets(args, tokenizer, train_set, dev_set, test_set)
-
-    # add the task index
-    train_set = train_set.map(lambda example: {'task_idx': 0})
-    dev_set = dev_set.map(lambda example: {'task_idx': 0})
-    test_set = test_set.map(lambda example: {'task_idx': 0})
+    # create dataloaders for the datasets
+    train_set = create_dataloader(args, train_set, tokenizer)
+    dev_set = create_dataloader(args, dev_set, tokenizer)
+    test_set = create_dataloader(args, test_set, tokenizer)
 
     # return the datasets
     return train_set, dev_set, test_set
