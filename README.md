@@ -48,6 +48,11 @@ optional arguments:
   --development					Limit the size of the datasets in development.
 ```
 
+## Errors
+* **[Errno 2] No such file or directory: '..\multinli_1.0\multinli_1.0_dev_matched.jsonl'** when using MNLI as the auxilary task.
+	* Download MultiNLI zip from the official website: https://cims.nyu.edu/~sbowman/multinli/
+	* Extract the ZIP and place the **multinli_1.0** folder in the cache directory as provided by the error message
+
 ## Authors
 * Luuk Kaandorp - luuk.kaandorp@student.uva.nl
 * Casper

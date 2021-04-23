@@ -59,6 +59,10 @@ def initialize_model(args, device):
     # add the auxilary tasks
     if args.aux_task == 'SST2':
         model.add_aux_classifiers(1)
+    elif args.aux_task == 'MNLI':
+        model.add_aux_classifiers(3)
+    elif args.aux_task == 'BOOLQ':
+        model.add_aux_classifiers(2)
     # TODO: add all tasks here
 
     # create the optimizers

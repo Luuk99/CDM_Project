@@ -11,6 +11,8 @@ from tqdm import tqdm
 # own imports
 from data.LoadCircaData import load_circa_matched, load_circa_unmatched
 from data.LoadSST2Data import load_sst2
+from data.LoadMNLIData import load_mnli
+from data.LoadBoolQData import load_boolq
 from utils import create_dataloader, compute_accuracy, create_path, initialize_model
 
 # set Huggingface logging to error only
@@ -38,9 +40,10 @@ def perform_step(model, optimizer, batch, device, task_idx, train=True):
     input_ids = batch['input_ids'].to(device)
     attention_mask = batch['attention_mask'].to(device)
     batch_labels = batch['labels'].to(device)
+    token_type_ids = batch['token_type_ids'].to(device)
 
     # pass the batch through the model
-    outputs = model(input_ids, attention_mask=attention_mask, labels=batch_labels, task_idx=task_idx)
+    outputs = model(input_ids, attention_mask=attention_mask, labels=batch_labels, token_type_ids=token_type_ids, task_idx=task_idx)
     loss = outputs.loss
 
     if train:
@@ -286,8 +289,12 @@ def handle_matched(args, device, path):
     # load the dataset
     print('Loading dataset..')
     train_set, dev_set, test_set = load_circa_matched(args, tokenizer)
-    if args.aux_task == 'SST':
+    if args.aux_task == 'SST2':
         train_aux_set, dev_aux_set, test_aux_set = load_sst2(args, tokenizer)
+    elif args.aux_task == 'MNLI':
+        train_aux_set, dev_aux_set, test_aux_set = load_mnli(args, tokenizer)
+    elif args.aux_task == 'BOOLQ':
+        train_aux_set, dev_aux_set, test_aux_set = load_boolq(args, tokenizer)
     # TODO: add all other datasets
     else:
         train_aux_set, dev_aux_set, test_aux_set = (None, None, None)
@@ -394,8 +401,12 @@ def handle_unmatched(args, device, path):
         # load the dataset
         print('Loading dataset..')
         train_set, dev_set, test_set = load_circa_unmatched(args, tokenizer, test_scenario, dev_scenario)
-        if args.aux_task == 'SST':
+        if args.aux_task == 'SST2':
             train_aux_set, dev_aux_set, test_aux_set = load_sst2(args, tokenizer)
+        elif args.aux_task == 'MNLI':
+            train_aux_set, dev_aux_set, test_aux_set = load_mnli(args, tokenizer)
+        elif args.aux_task == 'BOOLQ':
+            train_aux_set, dev_aux_set, test_aux_set = load_boolq(args, tokenizer)
         # TODO: add all other datasets
         else:
             train_aux_set, dev_aux_set, test_aux_set = (None, None, None)
@@ -526,7 +537,7 @@ if __name__ == '__main__':
     # mtl hyperparameters
     parser.add_argument('--aux_task', default=None, type=str,
                         help='Which auxilary task to train on. Default is None (STL)',
-                        choices=['SST2'])
+                        choices=['SST2', 'MNLI'])
     parser.add_argument('--aux_probing', action='store_true',
                         help=('Does not train BERT on the auxilary task, but only the classification layer.'))
 
