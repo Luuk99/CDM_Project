@@ -9,7 +9,7 @@ import datasets
 datasets.logging.set_verbosity_error()
 
 
-def load_filtered_dataset():
+def LoadFilteredDataset():
     """
     Function that loads the Circa dataset and filters it.
     Outputs:
@@ -28,7 +28,7 @@ def load_filtered_dataset():
     return dataset
 
 
-def prepare_sets(args, tokenizer, train_set, dev_set, test_set):
+def PrepareSets(args, tokenizer, train_set, dev_set, test_set):
     """
     Function that prepares the datasets for usage.
     Inputs:
@@ -45,15 +45,15 @@ def prepare_sets(args, tokenizer, train_set, dev_set, test_set):
 
     # function that encodes the questions and answers using the tokenizer
     def encode_qa(examples):
-         return tokenizer(examples['question-X'] + ' [SEP] ' + examples['answer-Y'], truncation=True, padding='max_length')
+         return tokenizer(examples['question-X'] + ' [SEP] ' + examples['answer-Y'] + ' [SEP]', truncation=True, padding='max_length')
 
     # function that encodes only the questions using the tokenizer
     def encode_q(examples):
-         return tokenizer(examples['question-X'], truncation=True, padding='max_length')
+         return tokenizer(examples['question-X'] + ' [SEP]', truncation=True, padding='max_length')
 
     # function that encodes only the answers using the tokenizer
     def encode_a(examples):
-         return tokenizer(examples['answer-Y'], truncation=True, padding='max_length')
+         return tokenizer(examples['answer-Y'] + ' [SEP]', truncation=True, padding='max_length')
 
     # check which encoding function to use
     if args.model_version == "QA":
@@ -92,7 +92,7 @@ def prepare_sets(args, tokenizer, train_set, dev_set, test_set):
     return train_set, dev_set, test_set
 
 
-def load_circa_matched(args, tokenizer):
+def LoadCircaMatched(args, tokenizer):
     """
     Function to load the Circa dataset for the matched setting.
     Inputs:
@@ -105,7 +105,7 @@ def load_circa_matched(args, tokenizer):
     """
 
     # load the filtered dataset
-    dataset = load_filtered_dataset()
+    dataset = LoadFilteredDataset()
 
     # split the dataset into train, dev and test
     dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
@@ -115,7 +115,7 @@ def load_circa_matched(args, tokenizer):
     test_set = dataset['test']
 
     # prepare the data
-    train_set, dev_set, test_set = prepare_sets(args, tokenizer, train_set, dev_set, test_set)
+    train_set, dev_set, test_set = PrepareSets(args, tokenizer, train_set, dev_set, test_set)
 
     # create dataloaders for the datasets
     train_set = create_dataloader(args, train_set, tokenizer)
@@ -126,7 +126,7 @@ def load_circa_matched(args, tokenizer):
     return train_set, dev_set, test_set
 
 
-def load_circa_unmatched(args, tokenizer, test_scenario, dev_scenario):
+def LoadCircaUnmatched(args, tokenizer, test_scenario, dev_scenario):
     """
     Function to load the Circa dataset for the unmatched setting.
     Inputs:
@@ -141,7 +141,7 @@ def load_circa_unmatched(args, tokenizer, test_scenario, dev_scenario):
     """
 
     # load the filtered dataset
-    dataset = load_filtered_dataset()
+    dataset = LoadFilteredDataset()
 
     # create the test, dev and train sets
     test_set = dataset.filter(lambda example: example['context'] == test_scenario)
@@ -150,7 +150,7 @@ def load_circa_unmatched(args, tokenizer, test_scenario, dev_scenario):
     train_set = train_set.filter(lambda example: example['context'] != dev_scenario)
 
     # prepare the data
-    train_set, dev_set, test_set = prepare_sets(args, tokenizer, train_set, dev_set, test_set)
+    train_set, dev_set, test_set = PrepareSets(args, tokenizer, train_set, dev_set, test_set)
 
     # create dataloaders for the datasets
     train_set = create_dataloader(args, train_set, tokenizer)

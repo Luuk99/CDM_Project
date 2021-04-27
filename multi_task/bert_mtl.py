@@ -36,11 +36,12 @@ class MLTBertForSequenceClassification(BertPreTrainedModel):
         """
         Function to create the auxilary classifiers for the additional tasks.
         Inputs:
-            aux_num_labels - Number of labels of the auxilary task
+            aux_num_labels - List of number of labels for the additional tasks
         """
 
-        self.num_labels_list.append(aux_num_labels)
-        self.classifiers.append(nn.Linear(self.hidden_size, aux_num_labels).to(self.device))
+        for task_num_labels in aux_num_labels:
+            self.num_labels_list.append(task_num_labels)
+            self.classifiers.append(nn.Linear(self.hidden_size, task_num_labels).to(self.device))
 
     def forward(self, input_ids=None, attention_mask=None, token_type_ids=None,
             position_ids=None, head_mask=None, inputs_embeds=None, labels=None, task_idx=None,

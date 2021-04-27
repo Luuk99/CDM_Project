@@ -9,7 +9,7 @@ import datasets
 datasets.logging.set_verbosity_error()
 
 
-def load_sst2(args, tokenizer):
+def LoadSST2(args, tokenizer):
     """
     Function that loads the SST2 sentiment dataset.
     Inputs:
@@ -31,7 +31,7 @@ def load_sst2(args, tokenizer):
 
     # function that encodes the sentences
     def encode_sentence(examples):
-         return tokenizer(examples['sentence'], truncation=True, padding='max_length')
+         return tokenizer(examples['sentence'] + ' [SEP]', truncation=True, padding='max_length')
 
     # tokenize the datasets
     train_set = train_set.map(encode_sentence, batched=False)

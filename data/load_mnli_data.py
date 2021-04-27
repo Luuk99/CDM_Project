@@ -9,7 +9,7 @@ import datasets
 datasets.logging.set_verbosity_error()
 
 
-def load_mnli(args, tokenizer):
+def LoadMNLI(args, tokenizer):
     """
     Function that loads the MultiNLI entailment dataset.
     Inputs:
@@ -32,7 +32,7 @@ def load_mnli(args, tokenizer):
 
     # function that encodes the sentences
     def encode_sentence(examples):
-         return tokenizer(examples['premise'] + ' [SEP] ' + examples['hypothesis'], truncation=True, padding='max_length')
+         return tokenizer(examples['premise'] + ' [SEP] ' + examples['hypothesis'] + ' [SEP]', truncation=True, padding='max_length')
 
     # tokenize the datasets
     train_set = train_set.map(encode_sentence, batched=False)

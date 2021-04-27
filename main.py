@@ -9,11 +9,13 @@ import torch
 from tqdm import tqdm
 
 # own imports
-from data.LoadCircaData import load_circa_matched, load_circa_unmatched
-from data.LoadSST2Data import load_sst2
-from data.LoadMNLIData import load_mnli
-from data.LoadBoolQData import load_boolq
-from utils import create_dataloader, compute_accuracy, create_path, initialize_model
+from data.load_circa_data import LoadCircaMatched, LoadCircaUnmatched
+from data.load_sst2_data import LoadSST2
+from data.load_mnli_data import LoadMNLI
+from data.load_boolq_data import LoadBoolQ
+from data.load_iqap_data import LoadIQAP
+from data.multitask_dataloader import MultiTaskDataloader
+from utils import create_dataloader, handle_epoch_metrics, create_path, initialize_model
 
 # set Huggingface logging to error only
 import transformers
@@ -47,8 +49,13 @@ def perform_step(model, optimizer, batch, device, task_idx, train=True):
     loss = outputs.loss
 
     if train:
-        # optimize the loss
+        # backward using the loss
         loss.backward()
+
+        # clip the gradient norm
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
+
+        # set a step with the optimizer
         optimizer.step()
         optimizer.zero_grad()
 
@@ -56,21 +63,18 @@ def perform_step(model, optimizer, batch, device, task_idx, train=True):
     return loss, outputs.logits, batch_labels
 
 
-def perform_epoch(args, model, main_optimizer, aux_optimizer, dataset, aux_dataset, device, train=True):
+def perform_epoch(args, model, optimizers, dataset, device, train=True):
     """
     Function that performs an epoch for the given model.
     Inputs:
         args - Namespace object from the argument parser
         model - BERT model instance
-        main_optimizer - AdamW optimizer instance for the main task
-        aux_optimizer - AdamW optimizer instance for auxilary task
+        optimizers - List of optimizers to use
         dataset - Dataset to use
-        aux_dataset - Dataset for the second task to use
         device - PyTorch device to use
         train - Whether to train or test the model
     Outputs:
-        mean_loss - Mean loss over the epoch
-        accuracy - Accuracy over all instances in the dataset
+        epoch_results - Dictionary containing the average epoch results
     """
 
     # set model to training or evaluation
@@ -82,47 +86,30 @@ def perform_epoch(args, model, main_optimizer, aux_optimizer, dataset, aux_datas
     # start a timer for the epoch time
     start_time = timer()
 
-    # initialize lists for the losses, predictions and labels
-    main_predictions = []
-    main_labels = []
-    main_losses = []
-    aux_predictions = []
-    aux_labels = []
-    aux_losses = []
-
-    # create a list for the auxilary dataset
-    if args.aux_task is not None:
-        aux_dataset = [batch for _, batch in enumerate(aux_dataset)]
+    # initialize dictionary for the results
+    result_dict = {}
 
     # loop over the batches
     if (args.progress_bar):
         dataset = tqdm(dataset)
-    for step, batch in enumerate(dataset):
+    for (task_name, task_idx, batch) in dataset:
         # perform a step for the main task
-        main_step_loss, main_step_predictions, main_step_labels = perform_step(model, main_optimizer, batch, device, 0, train)
-        main_predictions.append(main_step_predictions)
-        main_labels.append(main_step_labels)
-        main_losses.append(main_step_loss)
+        step_loss, step_predictions, step_labels = perform_step(model, optimizers[task_idx], batch, device, task_idx, train)
 
-        # perform a step for the auxilary task if an auxilary task is specified
-        if (args.aux_task is not None and step < len(aux_dataset)):
-            aux_step_loss, aux_step_predictions, aux_step_labels = perform_step(model, aux_optimizer, aux_dataset[step], device, 1, train)
-            aux_predictions.append(aux_step_predictions.squeeze())
-            aux_labels.append(aux_step_labels)
-            aux_losses.append(aux_step_loss)
+        # add the results to the dictionary
+        if task_name in result_dict:
+            result_dict[task_name]['predictions'].append(step_predictions.squeeze())
+            result_dict[task_name]['labels'].append(step_labels.squeeze())
+            result_dict[task_name]['losses'].append(step_loss)
+        else:
+            result_dict[task_name] = {
+                'predictions': [step_predictions.squeeze()],
+                'labels': [step_labels.squeeze()],
+                'losses': [step_loss]
+            }
 
-    # calculate the loss and accuracy for the main task
-    mean_main_loss = torch.mean(torch.stack(main_losses, dim=0), dim=0)
-    mean_main_loss = round(mean_main_loss.item(), 4)
-    main_accuracy = compute_accuracy(main_predictions, main_labels)
-
-    # calculate the loss and accuracy for the auxilary task
-    if args.aux_task is not None:
-        mean_aux_loss = torch.mean(torch.stack(aux_losses, dim=0), dim=0)
-        mean_aux_loss = round(mean_aux_loss.item(), 4)
-        aux_accuracy = compute_accuracy(aux_predictions, aux_labels)
-    else:
-        mean_aux_loss, aux_accuracy = (None, None)
+    # calculate the loss and accuracy for the different tasks
+    epoch_results = handle_epoch_metrics(result_dict)
 
     # record the end time
     end_time = timer()
@@ -130,24 +117,23 @@ def perform_epoch(args, model, main_optimizer, aux_optimizer, dataset, aux_datas
     # calculate the elapsed time
     elapsed_time = str(datetime.timedelta(seconds=(end_time - start_time)))
 
-    # return the elapsed time, loss and accuracy
-    return elapsed_time, mean_main_loss, main_accuracy, mean_aux_loss, aux_accuracy
+    # add the time to the epoch results
+    epoch_results['time'] = {'elapsed_time': elapsed_time}
+
+    # return the epoch results
+    return epoch_results
 
 
-def train_model(args, model, main_optimizer, aux_optimizer, train_set, dev_set, test_set, train_aux_set, dev_aux_set, test_aux_set, device, path):
+def train_model(args, model, optimizers, train_set, dev_set, test_set, device, path):
     """
     Function for training the model.
     Inputs:
         args - Namespace object from the argument parser
         model - BERT model instance
-        main_optimizer - AdamW optimizer instance for the main task
-        aux_optimizer - AdamW optimizer instance for auxilary task
-        train_set - Circa training set
-        dev_set - Circa development set
-        test_set - Circa test set
-        train_aux_set - Auxilary task training set
-        dev_aux_set - Auxilary task development set
-        test_aux_set - Auxilary task test set
+        optimizers - List of optimizers to use
+        train_set - Multitask training set
+        dev_set - Multitask development set
+        test_set - Multitask test set
         device - PyTorch device to use
         path - Path for storing the results
     Outputs:
@@ -163,28 +149,12 @@ def train_model(args, model, main_optimizer, aux_optimizer, train_set, dev_set, 
     # evaluate the model before training
     print('Epoch 0:')
     with torch.no_grad():
-        dev_time, main_dev_loss, main_dev_acc, aux_dev_loss, aux_dev_acc = perform_epoch(args, model, main_optimizer, aux_optimizer, dev_set, dev_aux_set, device, train=False)
-    print('Time: dev_time {} \nMain performance: dev_loss {} & dev_acc {} \nAuxilary performance: dev_loss {} & dev_acc {}'.format(
-            dev_time,
-            main_dev_loss,
-            main_dev_acc,
-            aux_dev_loss,
-            aux_dev_acc,
-        )
-    )
+        dev_results = perform_epoch(args, model, optimizers, dev_set, device, train=False)
+    print('Dev results:')
+    print(dev_results)
 
     # save the pre-training evaluation measures
-    gathered_results['epoch0'] = {
-        'time': {'dev_time': dev_time},
-        'main_performance' : {
-            'dev_loss': main_dev_loss,
-            'dev_acc': main_dev_acc,
-        },
-        'aux_performance' : {
-            'dev_loss': aux_dev_loss,
-            'dev_acc': aux_dev_acc,
-        }
-    }
+    gathered_results['epoch0'] = {'dev': dev_results}
 
     # train the model
     best_dev_acc = 0
@@ -193,62 +163,31 @@ def train_model(args, model, main_optimizer, aux_optimizer, train_set, dev_set, 
         print('Epoch {}:'.format(epoch))
 
         # perform a training epoch
-        train_time, main_train_loss, main_train_acc, aux_train_loss, aux_train_acc = perform_epoch(args, model, main_optimizer, aux_optimizer, train_set, train_aux_set, device, train=True)
+        train_results = perform_epoch(args, model, optimizers, train_set, device, train=True)
 
         # perform a development epoch
         with torch.no_grad():
-            dev_time, main_dev_loss, main_dev_acc, aux_dev_loss, aux_dev_acc = perform_epoch(args, model, main_optimizer, aux_optimizer, dev_set, dev_aux_set, device, train=False)
+            dev_results = perform_epoch(args, model, optimizers, dev_set, device, train=False)
 
         # print the epoch measures
-        print('Time: train_time {} & dev_time {} \nMain performance: train_loss {} & train_acc {} & dev_loss {} & dev_acc {} \nAuxilary performance: train_loss {} & train_acc {} & dev_loss {} & dev_acc {}'.format(
-                train_time,
-                dev_time,
-                main_train_loss,
-                main_train_acc,
-                main_dev_loss,
-                main_dev_acc,
-                aux_train_loss,
-                aux_train_acc,
-                aux_dev_loss,
-                aux_dev_acc,
-            )
-        )
+        print('Train results:')
+        print(train_results)
+        print('Dev results:')
+        print(dev_results)
 
         # save the epoch measures
-        gathered_results['epoch' + str(epoch)] = {
-            'time': {'train_time': train_time, 'dev_time': dev_time},
-            'main_performance' : {
-                'train_loss': main_train_loss,
-                'train_acc': main_train_acc,
-                'dev_loss': main_dev_loss,
-                'dev_acc': main_dev_acc,
-            },
-            'aux_performance' : {
-                'train_loss': aux_train_loss,
-                'train_acc': aux_train_acc,
-                'dev_loss': aux_dev_loss,
-                'dev_acc': aux_dev_acc
-            }
-        }
+        gathered_results['epoch' + str(epoch)] = {'train' : train_results, 'dev': dev_results}
 
         # check whether to save the model or not
-        if (round(main_dev_acc, 2) > best_dev_acc):
+        if (round(dev_results['Circa']['accuracy'], 2) > best_dev_acc):
             epochs_no_improvement = 0
-            best_dev_acc = round(main_dev_acc, 2)
+            best_dev_acc = round(dev_results['Circa']['accuracy'], 2)
             print('Saving new best model..')
-            if args.aux_task is not None:
-                torch.save({
-                    'epoch': epoch,
-                    'model_state_dict': model.state_dict(),
-                    'main_optimizer_state_dict': main_optimizer.state_dict(),
-                    'aux_optimizer_state_dict': aux_optimizer.state_dict(),
-                }, os.path.join(path, "best_model.pt"))
-            else:
-                torch.save({
-                    'epoch': epoch,
-                    'model_state_dict': model.state_dict(),
-                    'main_optimizer_state_dict': main_optimizer.state_dict(),
-                }, os.path.join(path, "best_model.pt"))
+            torch.save({
+                'epoch': epoch,
+                'bert_state_dict': model.bert.state_dict(),
+                'optimizer_state_dicts': [optimizer.state_dict() for optimizer in optimizers],
+            }, os.path.join(path, "best_model.pt"))
             print('New best model saved')
         else:
             epochs_no_improvement += 1
@@ -262,14 +201,13 @@ def train_model(args, model, main_optimizer, aux_optimizer, train_set, dev_set, 
     # load the best checkpoint
     print('Loading best model..')
     checkpoint = torch.load(os.path.join(path, "best_model.pt"))
-    model.load_state_dict(checkpoint['model_state_dict'])
-    main_optimizer.load_state_dict(checkpoint['main_optimizer_state_dict'])
-    if args.aux_task is not None:
-        aux_optimizer.load_state_dict(checkpoint['aux_optimizer_state_dict'])
+    model.bert.load_state_dict(checkpoint['bert_state_dict'])
+    for index, optimizer in enumerate(optimizers):
+        optimizer.load_state_dict(checkpoint['optimizer_state_dicts'][index])
     print('Best model loaded')
 
     # return the model, optimizers and results
-    return model, main_optimizer, aux_optimizer, gathered_results
+    return model, optimizers, gathered_results
 
 
 def handle_matched(args, device, path):
@@ -283,45 +221,53 @@ def handle_matched(args, device, path):
 
     # load the model
     print('Loading model..')
-    model, tokenizer, main_optimizer, aux_optimizer = initialize_model(args, device)
+    model, tokenizer, optimizers = initialize_model(args, device)
     print('Model loaded')
 
-    # load the dataset
-    print('Loading dataset..')
-    train_set, dev_set, test_set = load_circa_matched(args, tokenizer)
-    if args.aux_task == 'SST2':
-        train_aux_set, dev_aux_set, test_aux_set = load_sst2(args, tokenizer)
-    elif args.aux_task == 'MNLI':
-        train_aux_set, dev_aux_set, test_aux_set = load_mnli(args, tokenizer)
-    elif args.aux_task == 'BOOLQ':
-        train_aux_set, dev_aux_set, test_aux_set = load_boolq(args, tokenizer)
-    # TODO: add all other datasets
-    else:
-        train_aux_set, dev_aux_set, test_aux_set = (None, None, None)
-    print('Dataset loaded')
+    # load the datasets
+    print('Loading datasets..')
+    train_set, dev_set, test_set = LoadCircaMatched(args, tokenizer)
+    train_set = {'Circa': train_set}
+    dev_set = {'Circa': dev_set}
+    test_set = {'Circa': test_set}
+    for task in args.aux_tasks:
+        if task == 'SST2':
+            train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
+        elif task == 'MNLI':
+            train_aux_set, dev_aux_set, test_aux_set = LoadMNLI(args, tokenizer)
+        elif task == 'BOOLQ':
+            train_aux_set, dev_aux_set, test_aux_set = LoadBoolQ(args, tokenizer)
+        elif task == 'IQAP':
+            train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
+        # TODO: add all other datasets
+        train_set[task] = train_aux_set
+        dev_set[task] = dev_aux_set
+        test_set[task] = test_aux_set
+
+    # combine the dataloaders into a multi task datalaoder
+    train_set = MultiTaskDataloader(dataloaders=train_set)
+    dev_set = MultiTaskDataloader(dataloaders=dev_set)
+    test_set = MultiTaskDataloader(dataloaders=test_set)
+    print('Datasets loaded')
 
     # check if a checkpoint is provided
     if args.checkpoint_path is not None:
         # load the model from the given checkpoint
         print('Loading model from checkpoint..')
         checkpoint = torch.load(args.checkpoint_path)
-        model.load_state_dict(checkpoint['model_state_dict'])
-        main_optimizer.load_state_dict(checkpoint['main_optimizer_state_dict'])
-        aux_optimizer.load_state_dict(checkpoint['aux_optimizer_state_dict'])
+        model.bert.load_state_dict(checkpoint['bert_state_dict'])
+        for index, optimizer in enumerate(optimizers):
+            optimizer.load_state_dict(checkpoint['optimizer_state_dicts'][index])
         print('Model loaded')
     else:
         # train the model
-        model, main_optimizer, aux_optimizer, gathered_results = train_model(
+        model, optimizers, gathered_results = train_model(
             args = args,
             model = model,
-            main_optimizer = main_optimizer,
-            aux_optimizer = aux_optimizer,
+            optimizers=optimizers,
             train_set = train_set,
             dev_set = dev_set,
             test_set = test_set,
-            train_aux_set = train_aux_set,
-            dev_aux_set = dev_aux_set,
-            test_aux_set = test_aux_set,
             device = device,
             path = path
         )
@@ -329,30 +275,14 @@ def handle_matched(args, device, path):
     # test the model
     print('Starting testing..')
     with torch.no_grad():
-        test_time, main_test_loss, main_test_acc, aux_test_loss, aux_test_acc = perform_epoch(args, model, main_optimizer, aux_optimizer, test_set, train_aux_set, device, train=False)
-    print('Time: test_time {} \nMain performance: test_loss {} & test_acc {} \nAuxilary performance: test_loss {} & test_acc {}'.format(
-            test_time,
-            main_test_loss,
-            main_test_acc,
-            aux_test_loss,
-            aux_test_acc,
-        )
-    )
+        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False)
+    print('Test results:')
+    print(test_results)
     print('Testing finished')
 
     # save the testing measures
     if args.checkpoint_path is None:
-        gathered_results['testing'] = {
-            'time': {'test_time': test_time},
-            'main_performance' : {
-                'dev_loss': main_test_loss,
-                'dev_acc': main_test_acc,
-            },
-            'aux_performance' : {
-                'dev_loss': aux_test_loss,
-                'dev_acc': aux_test_acc,
-            }
-        }
+        gathered_results['testing'] = test_results
 
         # save the results as a json file
         print('Saving results..')
@@ -395,35 +325,43 @@ def handle_unmatched(args, device, path):
 
         # load the model
         print('Loading model..')
-        model, tokenizer, main_optimizer, aux_optimizer = initialize_model(args, device)
+        model, tokenizer, optimizers = initialize_model(args, device)
         print('Model loaded')
 
-        # load the dataset
-        print('Loading dataset..')
-        train_set, dev_set, test_set = load_circa_unmatched(args, tokenizer, test_scenario, dev_scenario)
-        if args.aux_task == 'SST2':
-            train_aux_set, dev_aux_set, test_aux_set = load_sst2(args, tokenizer)
-        elif args.aux_task == 'MNLI':
-            train_aux_set, dev_aux_set, test_aux_set = load_mnli(args, tokenizer)
-        elif args.aux_task == 'BOOLQ':
-            train_aux_set, dev_aux_set, test_aux_set = load_boolq(args, tokenizer)
-        # TODO: add all other datasets
-        else:
-            train_aux_set, dev_aux_set, test_aux_set = (None, None, None)
-        print('Dataset loaded')
+        # load the datasets
+        print('Loading datasets..')
+        train_set, dev_set, test_set = LoadCircaUnmatched(args, tokenizer, test_scenario, dev_scenario)
+        train_set = {'Circa': train_set}
+        dev_set = {'Circa': dev_set}
+        test_set = {'Circa': test_set}
+        for task in args.aux_tasks:
+            if task == 'SST2':
+                train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
+            elif task == 'MNLI':
+                train_aux_set, dev_aux_set, test_aux_set = LoadMNLI(args, tokenizer)
+            elif task == 'BOOLQ':
+                train_aux_set, dev_aux_set, test_aux_set = LoadBoolQ(args, tokenizer)
+            elif task == 'IQAP':
+                train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
+            # TODO: add all other datasets
+            train_set[task] = train_aux_set
+            dev_set[task] = dev_aux_set
+            test_set[task] = test_aux_set
+
+        # combine the dataloaders into a multi task datalaoder
+        train_set = MultiTaskDataloader(dataloaders=train_set)
+        dev_set = MultiTaskDataloader(dataloaders=dev_set)
+        test_set = MultiTaskDataloader(dataloaders=test_set)
+        print('Datasets loaded')
 
         # train the model
-        model, main_optimizer, aux_optimizer, gathered_results = train_model(
+        model, optimizers, gathered_results = train_model(
             args = args,
             model = model,
-            main_optimizer = main_optimizer,
-            aux_optimizer = aux_optimizer,
+            optimizers=optimizers,
             train_set = train_set,
             dev_set = dev_set,
             test_set = test_set,
-            train_aux_set = train_aux_set,
-            dev_aux_set = dev_aux_set,
-            test_aux_set = test_aux_set,
             device = device,
             path = path
         )
@@ -431,31 +369,13 @@ def handle_unmatched(args, device, path):
         # test the model
         print('Starting testing..')
         with torch.no_grad():
-            test_time, main_test_loss, main_test_acc, aux_test_loss, aux_test_acc = perform_epoch(args, model, main_optimizer, aux_optimizer, test_set, train_aux_set, device, train=False)
-        print('Time: test_time {} \nMain performance: test_loss {} & test_acc {} \nAuxilary performance: test_loss {} & test_acc {}'.format(
-                test_time,
-                main_test_loss,
-                main_test_acc,
-                aux_test_loss,
-                aux_test_acc,
-            )
-        )
+            test_results = perform_epoch(args, model, optimizers, test_set, device, train=False)
+        print('Test results:')
+        print(test_results)
         print('Testing finished')
 
-        # save the testing measures
-        gathered_results['testing'] = {
-            'time': {'test_time': test_time},
-            'main_performance' : {
-                'dev_loss': main_test_loss,
-                'dev_acc': main_test_acc,
-            },
-            'aux_performance' : {
-                'dev_loss': aux_test_loss,
-                'dev_acc': aux_test_acc,
-            }
-        }
-
         # save the results for the current scenario
+        gathered_results['testing'] = test_results
         test_results['scenario' + str(index + 1)] = gathered_results
 
     # save the results as a json file
@@ -483,7 +403,7 @@ def main(args):
     print('Model version: {}'.format(args.model_version))
     print('Labels: {}'.format(args.labels))
     print('Setting: {}'.format(args.setting))
-    print('Auxilary task: {}'.format(args.aux_task))
+    print('Auxilary tasks: {}'.format(args.aux_tasks))
     print('Auxilary task probing: {}'.format(args.aux_probing))
     print('PyTorch device: {}'.format(device))
     print('Max epochs: {}'.format(args.max_epochs))
@@ -535,11 +455,11 @@ if __name__ == '__main__':
                         help='Minibatch size. Default is 8')
 
     # mtl hyperparameters
-    parser.add_argument('--aux_task', default=None, type=str,
-                        help='Which auxilary task to train on. Default is None (STL)',
-                        choices=['SST2', 'MNLI'])
+    parser.add_argument('--aux_tasks', default=[], type=str, nargs='*',
+                        help='Which auxilary tasks to train on. Default is [] (STL)',
+                        choices=['IQAP', 'SST2', 'MNLI', 'BOOLQ'])
     parser.add_argument('--aux_probing', action='store_true',
-                        help=('Does not train BERT on the auxilary task, but only the classification layer.'))
+                        help=('Does not train BERT on the auxilary tasks, but only the classification layer.'))
 
     # loading hyperparameters
     parser.add_argument('--checkpoint_path', default=None, type=str,

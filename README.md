@@ -25,6 +25,9 @@ TODO: add all steps to getting started
 ## Replicating Results
 TODO: add brief description on how to replicate the results
 
+## Datasets
+* For the IQAP dataset, download the zip from the [official website](http://compprag.christopherpotts.net/iqap.html) and move the csv to the **data/local_datasets/iqap** folder.
+
 ## Arguments
 The models can be trained with the following command line arguments:
 ```bash
@@ -59,4 +62,4 @@ optional arguments:
 * Damiaan 
 
 ## Acknowledgements
-* Circa dataset was cloned from the [original project GitHub](https://github.com/google-research-datasets/circa).
+* 

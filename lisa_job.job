@@ -5,7 +5,7 @@
 #SBATCH --job-name=CDMModelTraining
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=3
-#SBATCH --time=08:00:00
+#SBATCH --time=24:00:00
 #SBATCH --mem=32000M
 #SBATCH --output=slurm_output_%A.out
 
@@ -22,4 +22,4 @@ cd $HOME/CDM_Project/
 # Activate your environment
 source activate CDM
 # Run your code
-srun python -u main.py --model_version QA --labels strict --setting matched
+srun python -u main.py --model_version QA --labels strict --setting matched --max_epochs 3 --aux_tasks MNLI

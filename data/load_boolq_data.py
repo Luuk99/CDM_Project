@@ -9,7 +9,7 @@ import datasets
 datasets.logging.set_verbosity_error()
 
 
-def load_boolq(args, tokenizer):
+def LoadBoolQ(args, tokenizer):
     """
     Function that loads the BoolQ question-answering dataset.
     Inputs:
@@ -24,34 +24,35 @@ def load_boolq(args, tokenizer):
     # load the sst dataset
     dataset = load_dataset("boolq")
 
-    # DEBUG
-    print(dataset)
-    exit()
-
     # divide into train, dev and test
     train_set = dataset['train']
-    dataset = dataset['validation_matched'].train_test_split(test_size=0.5, train_size=0.5, shuffle=True)
+    dataset = dataset['validation'].train_test_split(test_size=0.5, train_size=0.5, shuffle=True)
     dev_set = dataset['train']
     test_set = dataset['test']
 
-    # function that encodes the sentences
+    # function that encodes the question and passage
     def encode_sentence(examples):
-         return tokenizer(examples['premise'] + ' [SEP] ' + examples['hypothesis'], truncation=True, padding='max_length')
+         return tokenizer(examples['question'] + ' [SEP] ' + examples['passage'] + ' [SEP]', truncation=True, padding='max_length')
 
     # tokenize the datasets
     train_set = train_set.map(encode_sentence, batched=False)
     dev_set = dev_set.map(encode_sentence, batched=False)
     test_set = test_set.map(encode_sentence, batched=False)
 
-    # remove unnecessary columns
-    train_set = train_set.remove_columns(['promptID', 'pairID', 'premise', 'premise_binary_parse', 'premise_parse',  'hypothesis', 'hypothesis_binary_parse', 'hypothesis_parse', 'genre'])
-    dev_set = dev_set.remove_columns(['promptID', 'pairID', 'premise', 'premise_binary_parse', 'premise_parse',  'hypothesis', 'hypothesis_binary_parse', 'hypothesis_parse', 'genre'])
-    test_set = test_set.remove_columns(['promptID', 'pairID', 'premise', 'premise_binary_parse', 'premise_parse',  'hypothesis', 'hypothesis_binary_parse', 'hypothesis_parse', 'genre'])
+    # function to convert the answers to 0 (false) and 1 (true)
+    def change_label(example):
+        example['labels'] = 0 if (example['answer']) else 1
+        return example
 
-    # rename the labels
-    train_set = train_set.rename_column("label", "labels")
-    dev_set = dev_set.rename_column("label", "labels")
-    test_set = test_set.rename_column("label", "labels")
+    # convert answers to labels
+    train_set = train_set.map(change_label, batched=False)
+    dev_set = dev_set.map(change_label, batched=False)
+    test_set = test_set.map(change_label, batched=False)
+
+    # remove unnecessary columns
+    train_set = train_set.remove_columns(['question', 'passage', 'answer'])
+    dev_set = dev_set.remove_columns(['question', 'passage', 'answer'])
+    test_set = test_set.remove_columns(['question', 'passage', 'answer'])
 
     # create dataloaders for the datasets
     train_set = create_dataloader(args, train_set, tokenizer)
