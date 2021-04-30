@@ -98,13 +98,13 @@ def perform_epoch(args, model, optimizers, dataset, device, train=True):
 
         # add the results to the dictionary
         if task_name in result_dict:
-            result_dict[task_name]['predictions'].append(step_predictions.squeeze())
-            result_dict[task_name]['labels'].append(step_labels.squeeze())
+            result_dict[task_name]['predictions'].append(step_predictions)
+            result_dict[task_name]['labels'].append(step_labels)
             result_dict[task_name]['losses'].append(step_loss)
         else:
             result_dict[task_name] = {
-                'predictions': [step_predictions.squeeze()],
-                'labels': [step_labels.squeeze()],
+                'predictions': [step_predictions],
+                'labels': [step_labels],
                 'losses': [step_loss]
             }
 
@@ -408,7 +408,7 @@ def main(args):
     print('PyTorch device: {}'.format(device))
     print('Max epochs: {}'.format(args.max_epochs))
     print('Patience: {}'.format(args.patience))
-    print('Learning rate: {}'.format(args.lr))
+    print('Learning rates: {}'.format(args.lrs))
     print('Batch size: {}'.format(args.batch_size))
     print('Results directory: {}'.format(args.results_dir))
     print('Progress bar: {}'.format(args.progress_bar))
@@ -449,8 +449,8 @@ if __name__ == '__main__':
                         help='Stops training after patience number of epochs without improvement in dev accuracy. Default is 3')
 
     # optimizer hyperparameters
-    parser.add_argument('--lr', default=3e-5, type=float,
-                        help='Learning rate to use. Default is 3e-5')
+    parser.add_argument('--lrs', default=[3e-5], type=float, nargs='*',
+                        help='Learning rates to use per task. Default is [3e-5] (STL)')
     parser.add_argument('--batch_size', default=8, type=int,
                         help='Minibatch size. Default is 8')
 

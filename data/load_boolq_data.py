@@ -32,7 +32,7 @@ def LoadBoolQ(args, tokenizer):
 
     # function that encodes the question and passage
     def encode_sentence(examples):
-         return tokenizer(examples['question'] + ' [SEP] ' + examples['passage'] + ' [SEP]', truncation=True, padding='max_length')
+         return tokenizer('[CLS] ' + examples['question'] + ' [SEP] ' + examples['passage'] + ' [SEP]', truncation=True, padding='max_length')
 
     # tokenize the datasets
     train_set = train_set.map(encode_sentence, batched=False)

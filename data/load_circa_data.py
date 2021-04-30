@@ -45,15 +45,15 @@ def PrepareSets(args, tokenizer, train_set, dev_set, test_set):
 
     # function that encodes the questions and answers using the tokenizer
     def encode_qa(examples):
-         return tokenizer(examples['question-X'] + ' [SEP] ' + examples['answer-Y'] + ' [SEP]', truncation=True, padding='max_length')
+         return tokenizer('[CLS] ' + examples['question-X'] + ' [SEP] ' + examples['answer-Y'] + ' [SEP]', truncation=True, padding='max_length')
 
     # function that encodes only the questions using the tokenizer
     def encode_q(examples):
-         return tokenizer(examples['question-X'] + ' [SEP]', truncation=True, padding='max_length')
+         return tokenizer('[CLS] ' + examples['question-X'] + ' [SEP]', truncation=True, padding='max_length')
 
     # function that encodes only the answers using the tokenizer
     def encode_a(examples):
-         return tokenizer(examples['answer-Y'] + ' [SEP]', truncation=True, padding='max_length')
+         return tokenizer('[CLS] ' + examples['answer-Y'] + ' [SEP]', truncation=True, padding='max_length')
 
     # check which encoding function to use
     if args.model_version == "QA":

@@ -20,6 +20,8 @@ def create_path(args):
     Function that creates a path for the results based on the model arguments.
     Inputs:
         args - Namespace object from the argument parser
+    Outputs:
+        path - Path where to store the results
     """
 
     # create the path
@@ -48,7 +50,15 @@ def initialize_model(args, device):
     Inputs:
         args - Namespace object from the argument parser
         device - PyTorch device to use
+    Outputs:
+        model - MultiTask BERT model instance
+        tokenizer - BERT tokenizer instance
+        optimizers - List of optimizers
     """
+
+    # check if the learning rates list is as long as the number of tasks
+    if (len(args.lrs) != (len(args.aux_tasks) + 1)):
+        raise ValueError('Length of learning rates list must match the number of tasks (auxiliary + main)')
 
     # dictionary for the number of classes per task
     # TODO: add all tasks here
@@ -86,22 +96,22 @@ def initialize_model(args, device):
         + [p for n, p in model.classifiers[0].named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
     ]
     # add the main task optimizer
-    optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lr))
+    optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lrs[0]))
     # add the auxiliary task optimizers
     for index, task in enumerate(args.aux_tasks):
         if args.aux_probing:
             optimizer_grouped_parameters = [
-                {'params': [p for n, p in model.classifiers[index].named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
-                {'params': [p for n, p in model.classifiers[index].named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+                {'params': [p for n, p in model.classifiers[index + 1].named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+                {'params': [p for n, p in model.classifiers[index + 1].named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
             ]
         else:
             optimizer_grouped_parameters = [
                 {'params': [p for n, p in model.bert.named_parameters() if not any(nd in n for nd in no_decay)]
-                + [p for n, p in model.classifiers[index].named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+                + [p for n, p in model.classifiers[index + 1].named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
                 {'params': [p for n, p in model.bert.named_parameters() if any(nd in n for nd in no_decay)]
-                + [p for n, p in model.classifiers[index].named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+                + [p for n, p in model.classifiers[index + 1].named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
             ]
-            optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lr))
+            optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lrs[index + 1]))
 
     # return the model, tokenizer and optimizers
     return model, tokenizer, optimizers
@@ -114,10 +124,9 @@ def create_dataloader(args, dataset, tokenizer):
         args - Namespace object from the argument parser
         dataset - Dataset to convert to Dataloader
         tokenizer - BERT tokenizer instance
+    Outputs:
+        dataset - DataLoader object of the dataset
     """
-
-    # create a sampler
-    sampler = RandomSampler(dataset)
 
     # create a data collator function
     data_collator = DataCollatorWithPadding(tokenizer)
@@ -126,9 +135,9 @@ def create_dataloader(args, dataset, tokenizer):
     dataset = DataLoader(
         dataset,
         batch_size=args.batch_size,
-        sampler=sampler,
         collate_fn=data_collator,
         drop_last=False,
+        shuffle=True,
     )
 
     # return the dataset
@@ -141,6 +150,8 @@ def compute_accuracy(preds, labels):
     Inputs:
         preds - List of batched predictions from the model
         labels - List of batched real labels
+    Outputs:
+        acc - Accuracy of the predictions and real labels
     """
 
     # concatenate the predictions and labels

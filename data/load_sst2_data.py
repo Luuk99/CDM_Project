@@ -31,7 +31,7 @@ def LoadSST2(args, tokenizer):
 
     # function that encodes the sentences
     def encode_sentence(examples):
-         return tokenizer(examples['sentence'] + ' [SEP]', truncation=True, padding='max_length')
+         return tokenizer('[CLS] ' + examples['sentence'] + ' [SEP]', truncation=True, padding='max_length')
 
     # tokenize the datasets
     train_set = train_set.map(encode_sentence, batched=False)
