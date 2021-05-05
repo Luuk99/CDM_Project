@@ -287,13 +287,3 @@ def LoadCircaUnmatched(args, tokenizer, test_scenario, dev_scenario):
 
     # return the datasets
     return train_set, dev_set, test_set
-
-class TestDSet(Dataset):
-    def __init__(self, cols):
-        self.cols = cols
-        
-    def __len__(self):
-        return 34268
-
-    def __getitem__(self, idx):
-        return {'answer-Y': self.cols[idx], 'most_important_word': 'hoi'}
