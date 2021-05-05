@@ -1,5 +1,6 @@
 # imports
 from datasets import load_dataset
+from torch.utils.data import Dataset, DataLoader, ConcatDataset
 
 # own imports
 from utils import create_dataloader
@@ -8,17 +9,34 @@ from utils import create_dataloader
 import datasets
 datasets.logging.set_verbosity_error()
 
+from nltk import pos_tag, word_tokenize, download
+from nltk.corpus import wordnet as wn
 
-def LoadFilteredDataset():
+FILENAME_IMPORTANT_WORD_ANNOTATIONS = "data/annotations/important_word_annotations.dat"
+FILENAME_TOPIC_ANNOTATIONS          = "data/annotations/topic_annotations.dat"
+WORDNET_TOPIC_DEPTH = 6 # top-down (most start with 'entity') - empirically set
+
+def processCircaDataset(doAnnotateImportantWords = False, preloadImportantWords = True,
+                          doAnnotateTopics = False, preloadTopics = True):
     """
-    Function that loads the Circa dataset and filters it.
+    Function that processes the Circa dataset by filtering and annotating it.
+    
     Outputs:
-        dataset - Filtered Circa dataset
+        dataset - Filtered/annotated Circa dataset
     """
 
     # load the dataset
     dataset = load_dataset('circa')['train']
-
+    
+    if doAnnotateImportantWords:
+        mostImportantWords = annotateImportantWords(dataset, preload = preloadImportantWords)
+        dataset = dataset.add_column('most_important_word_in_answer', mostImportantWords)
+        
+        # nested because important word must be present
+        if doAnnotateTopics:
+            topicsForAnswer = annotateTopics(dataset, preload = preloadTopics)
+            dataset = dataset.add_column('topic', topicsForAnswer)
+    
     # filter out instances with label 'Other', 'I am not sure..' or 'N/A' (-1)
     dataset = dataset.filter(lambda example: example['goldstandard1'] != dataset.features['goldstandard1'].str2int('Other'))
     dataset = dataset.filter(lambda example: example['goldstandard1'] != dataset.features['goldstandard1'].str2int("I am not sure how X will interpret Y’s answer"))
@@ -27,6 +45,114 @@ def LoadFilteredDataset():
     # return the dataset
     return dataset
 
+def annotateImportantWords(dataset, preload = True):
+    """
+    Function that generates a column of the most important words for every answer
+    present in a given dataset. Dumps automatically generated results in a .dat
+    file which can be manually corrected and pre-loaded later. Works by simply
+    extracting the last noun in the answer (NOTE: could definitely be improved!)
+    
+    Inputs:
+        dataset - circa dataset loaded from huggingface
+        preload - if set to True, data will be preloaded and not generated
+                        (from file specified in top of this document)
+    Outputs:
+        importantWordsColumn - column of same dimensions of len(dataset) with respective words
+    """
+    
+    importantWordsColumn = []
+
+    if not preload:
+        print("Starting automatic annotation of most important words\r\nErrors can be corrected manually afterwards and re-(pre-)loaded.")
+        
+        # automatic annotations are automatically saved (and should be corrected afterwards)
+        annotationFile = open(FILENAME_IMPORTANT_WORD_ANNOTATIONS, 'w') # note: overwriting!
+        
+        for i in range(len(dataset)):
+            noun = "" # base
+            pos_tags = pos_tag(word_tokenize(dataset[i]['answer-Y']))
+            nouns = [pos_tag[0] for pos_tag in pos_tags if pos_tag[1][0:2] == 'NN'] # taking both singular and plural
+            
+            if nouns:
+                noun = nouns[-1] # last noun
+                
+            annotationFile.write(dataset[i]['answer-Y'] + '::' + noun + "\n") # sequence :: doesn't occur in the answers
+            
+            importantWordsColumn.append(noun)
+        
+        annotationFile.close()
+        
+    else:
+        print("Pre-loading annotations for most important word in answer")
+        
+        with open(FILENAME_IMPORTANT_WORD_ANNOTATIONS) as annotationFile:
+            for annotation in annotationFile:
+                importantWordsColumn.append(annotation.split('::')[1].strip('\n'))
+    
+    return importantWordsColumn
+    
+def annotateTopics(dataset, preload = None):
+    """
+    Function that generates a high-level topic for every answer present in a given
+    dataset. Note that the column with the most important word in the answer must
+    be present. Dumps automatically generated results in a .dat file. Works by
+    constructing a WordNet hierarchy from bottom (import word) to top ('entity'),
+    from which then (top-down) a node is chosen as the 'topic' (node level specified
+    at the top of this document).
+    
+    NOTE: always the first node on the same level is chosen, and the first lemma of a synset.
+    
+    Inputs:
+        dataset - circa dataset loaded from huggingface
+        preload - if set to True, data will be preloaded and not generated
+                        (from file specified in top of this document)
+    Outputs:
+        importantWordsColumn - column of same dimensions of len(dataset) with respective words
+    """
+    download('wordnet') # WordNet data must be downloaded locally
+
+    topicsColumn = []
+
+    if not preload:
+        print("Starting automatic annotation of high-level topics based on most important word")
+        
+        # automatic annotations are automatically saved
+        annotationFile = open(FILENAME_TOPIC_ANNOTATIONS, 'w')
+        
+        for i in range(len(dataset)):
+            topic = "" # base
+            if dataset[i]['most_important_word_in_answer']:
+                hierarchicalHypernyms = []
+                
+                synset = wn.synsets(dataset[i]['most_important_word_in_answer'], pos=wn.NOUN) # only nouns
+                
+                if synset:
+                    synsetHypernyms = synset[0].hypernyms()
+                    
+                    # iteratively finding a noun's hypernyms until exhausted ('entity')
+                    while synsetHypernyms:
+                        hierarchicalHypernyms.append(synsetHypernyms[0])
+                        synsetHypernyms = synsetHypernyms[0].hypernyms()
+                        
+                    if len(hierarchicalHypernyms) > WORDNET_TOPIC_DEPTH:
+                        topic = hierarchicalHypernyms[-WORDNET_TOPIC_DEPTH].lemmas()[0].name()
+                    elif hierarchicalHypernyms:
+                        topic = hierarchicalHypernyms[0].lemmas()[0].name() # a synset can have multiple lemma's
+                
+            annotationFile.write(dataset[i]['answer-Y'] + '::' + topic + "\n")
+            
+            topicsColumn.append(topic)
+        
+        annotationFile.close()
+        
+    else:
+        print("Pre-loading annotations for most important word in answer")
+        
+        with open(FILENAME_TOPIC_ANNOTATIONS) as annotationFile:
+            for annotation in annotationFile:
+                topicsColumn.append(annotation.split('::')[1].strip('\n'))
+    
+    return topicsColumn
 
 def PrepareSets(args, tokenizer, train_set, dev_set, test_set):
     """
@@ -105,7 +231,8 @@ def LoadCircaMatched(args, tokenizer):
     """
 
     # load the filtered dataset
-    dataset = LoadFilteredDataset()
+    dataset = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords,
+                                    doAnnotateTopics = args.topics, preloadTopics = args.nptopics)
 
     # split the dataset into train, dev and test
     dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
@@ -141,7 +268,8 @@ def LoadCircaUnmatched(args, tokenizer, test_scenario, dev_scenario):
     """
 
     # load the filtered dataset
-    dataset = LoadFilteredDataset()
+    dataset = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords,
+                                    doAnnotateTopics = args.topics, preloadTopics = args.nptopics)
 
     # create the test, dev and train sets
     test_set = dataset.filter(lambda example: example['context'] == test_scenario)
@@ -159,3 +287,13 @@ def LoadCircaUnmatched(args, tokenizer, test_scenario, dev_scenario):
 
     # return the datasets
     return train_set, dev_set, test_set
+
+class TestDSet(Dataset):
+    def __init__(self, cols):
+        self.cols = cols
+        
+    def __len__(self):
+        return 34268
+
+    def __getitem__(self, idx):
+        return {'answer-Y': self.cols[idx], 'most_important_word': 'hoi'}

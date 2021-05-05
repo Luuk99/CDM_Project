@@ -202,3 +202,16 @@ def handle_epoch_metrics(step_metrics):
 
     # return the epoch dictionary
     return epoch_metrics
+
+def str2bool(v):
+    """
+    Useful for bool argparsing, adopted from: https://stackoverflow.com/a/43357954/4022008
+    """
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')

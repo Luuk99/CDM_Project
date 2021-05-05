@@ -15,7 +15,7 @@ from data.load_mnli_data import LoadMNLI
 from data.load_boolq_data import LoadBoolQ
 from data.load_iqap_data import LoadIQAP
 from data.multitask_dataloader import MultiTaskDataloader
-from utils import create_dataloader, handle_epoch_metrics, create_path, initialize_model
+from utils import create_dataloader, handle_epoch_metrics, create_path, initialize_model, str2bool
 
 # set Huggingface logging to error only
 import transformers
@@ -418,7 +418,7 @@ def main(args):
     path = create_path(args)
     if not os.path.exists(path):
         os.makedirs(path)
-
+        
     # check which setting is selected
     if args.setting == 'matched':
         handle_matched(args, device, path)
@@ -441,6 +441,14 @@ if __name__ == '__main__':
     parser.add_argument('--setting', default='matched', type=str,
                         help='What test setting is used. Default is matched',
                         choices=['matched', 'unmatched'])
+    parser.add_argument('--impwords', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, Circa dataset will be annotated with most important word in answers.')
+    parser.add_argument('--topics', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, Circa dataset will be annotated with a WordNet topic for every answer')
+    parser.add_argument('--npimpwords', nargs='?', type=str2bool, const=False, default=True,
+                        help='If mentioned, important words annotations will NOT be pre-loaded, but re-generated')
+    parser.add_argument('--nptopics', nargs='?', type=str2bool, const=False, default=True,
+                        help='If mentioned, topic annotations will NOT be pre-loaded, but re-generated')
 
     # training hyperparameters
     parser.add_argument('--max_epochs', default=10, type=int,
