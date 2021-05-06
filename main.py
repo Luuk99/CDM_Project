@@ -52,9 +52,6 @@ def perform_step(model, optimizer, batch, device, task_idx, train=True):
         # backward using the loss
         loss.backward()
 
-        # clip the gradient norm
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1)
-
         # set a step with the optimizer
         optimizer.step()
         optimizer.zero_grad()
@@ -179,9 +176,9 @@ def train_model(args, model, optimizers, train_set, dev_set, test_set, device, p
         gathered_results['epoch' + str(epoch)] = {'train' : train_results, 'dev': dev_results}
 
         # check whether to save the model or not
-        if (round(dev_results['Circa']['accuracy'], 2) > best_dev_acc):
+        if (round(dev_results['Circa']['accuracy'], 3) > best_dev_acc):
             epochs_no_improvement = 0
-            best_dev_acc = round(dev_results['Circa']['accuracy'], 2)
+            best_dev_acc = round(dev_results['Circa']['accuracy'], 3)
             print('Saving new best model..')
             torch.save({
                 'epoch': epoch,

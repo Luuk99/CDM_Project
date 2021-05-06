@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#SBATCH --partition=gpu_shared_course
+#SBATCH --partition=gpu_titanrtx_shared_course
 #SBATCH --gres=gpu:1
-#SBATCH --job-name=CDMModelTraining
+#SBATCH --job-name=CDMModelTraining2
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=3
-#SBATCH --time=36:00:00
-#SBATCH --mem=32000M
+#SBATCH --cpus-per-task=6
+#SBATCH --time=4:00:00
+#SBATCH --mem=48000M
 #SBATCH --output=slurm_output_%A.out
 
 module purge
@@ -22,4 +22,4 @@ cd $HOME/CDM_Project/
 # Activate your environment
 source activate CDM
 # Run your code
-srun python -u main.py --model_version QA --labels strict --setting matched --max_epochs 5 --aux_tasks MNLI --lrs 5e-5 2e-5
+srun python -u main.py --model_version QA --labels strict --setting matched --max_epochs 5 --batch_size 8
