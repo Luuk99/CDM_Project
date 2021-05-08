@@ -440,8 +440,8 @@ if __name__ == '__main__':
                         choices=['matched', 'unmatched'])
 
     # training hyperparameters
-    parser.add_argument('--max_epochs', default=10, type=int,
-                        help='Maximum number of epochs to train for. Default is 10')
+    parser.add_argument('--max_epochs', default=5, type=int,
+                        help='Maximum number of epochs to train for. Default is 5')
     parser.add_argument('--patience', default=3, type=int,
                         help='Stops training after patience number of epochs without improvement in dev accuracy. Default is 3')
 
@@ -453,10 +453,10 @@ if __name__ == '__main__':
 
     # mtl hyperparameters
     parser.add_argument('--aux_tasks', default=[], type=str, nargs='*',
-                        help='Which auxilary tasks to train on. Default is [] (STL)',
+                        help='Which auxiliary tasks to train on. Default is [] (STL)',
                         choices=['IQAP', 'SST2', 'MNLI', 'BOOLQ'])
     parser.add_argument('--aux_probing', action='store_true',
-                        help=('Does not train BERT on the auxilary tasks, but only the classification layer.'))
+                        help=('Does not train BERT on the auxiliary tasks, but only the classification layer.'))
 
     # loading hyperparameters
     parser.add_argument('--checkpoint_path', default=None, type=str,
