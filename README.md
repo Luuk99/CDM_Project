@@ -31,24 +31,26 @@ TODO: add brief description on how to replicate the results
 ## Arguments
 The models can be trained with the following command line arguments:
 ```bash
-usage: main.py [-h] [--model MODEL] [--lr LR] [--lr_decay LR_DECAY]
-		    [--lr_decrease_factor LR_DECREASE_FACTOR] [--lr_threshold LR_THRESHOLD] 
-		    [--batch_size BATCH_SIZE] [--checkpoint_dir CHECKPOINT_DIR]
-		    [--seed SEED] [--log_dir LOG_DIR] [--progress_bar] [--development]
+usage: main.py [-h] [--model_version MODEL_VERSION] [--labels LABELS] [--setting SETTING]
+		    [--max_epochs MAX_EPOCHS] [--patience PATIENCE] [--lrs LRS] [--batch_size BATCH_SIZE]
+		    [--aux_tasks AUX_TASKS] [--aux_probing] [--checkpoint_path CHECKPOINT_PATH]
+		    [--seed SEED] [--results_dir RESULTS_DIR] [--progress_bar]
 
 optional arguments:
   -h, --help            			Show help message and exit.
-  --model MODEL					What model to use. Options: ['AWE', 'UniLSTM', 'BiLSTM', 'BiLSTMMax']. Default is 'AWE'.
-  --lr LR					Learning rate to use. Default is 0.1.
-  --lr_decay LR_DECAY				Learning rate decay after each epoch. Default is 0.99.
-  --lr_decrease_factor LR_DECREASE_FACTOR	Factor to divide learning rate by when dev accuracy decreases. Default is 5.
-  --lr_threshold LR_THRESHOLD			Learning rate threshold to stop at. Default is 10e-5.
-  --batch_size BATCH_SIZE			Minibatch size. Default is 64.
-  --checkpoint_dir CHECKPOINT_DIR		Directory where the pretrained model checkpoint is located. Default is None (no checkpoint used).
+  --model_version MODEL_VERSION			What model version to use. Options: ['QA', 'Q', 'A']. Default is 'QA' (Question and Answer).
+  --labels LABELS				What labels to use. Options: ['strict', 'relaxed']. Default is 'strict'.
+  --setting SETTING				What test setting is used. Options: ['matched', 'unmatched']. Default is 'matched'.
+  --max_epochs MAX_EPOCHS			Maximum number of epochs to train for. Default is 5.
+  --patience PATIENCE				Stops training after patience number of epochs without improvement in development accuracy. Default is 3.
+  --lrs LRS					Learning rates to use per task. Default is [3e-5] (for single task learning).
+  --batch_size BATCH_SIZE			Minibatch size. Default is 8.
+  --aux_tasks AUX_TASKS				Which auxiliary tasks to train on. Options: ['IQAP', 'SST2', 'MNLI', 'BOOLQ']. Default is [] (single task learning).
+  --aux_probing 				Train only the classification layers for the auxiliary tasks.
+  --checkpoint_path CHECKPOINT_PATH		Path to where the model checkpoint is located. Default is None (train from scratch).
   --seed SEED					Seed to use for reproducing results. Default is 1234.
-  --log_dir LOG_DIR				Directory where the PyTorch Lightning logs should be created. Default is 'pl_logs'.
+  --results_dir RESULTS_DIR			Directory where the training results should be created. Default is './mtl_results'.
   --progress_bar				Use a progress bar indicator for interactive experimentation. Not to be used in conjuction with SLURM jobs.
-  --development					Limit the size of the datasets in development.
 ```
 
 ## Errors
@@ -58,8 +60,8 @@ optional arguments:
 
 ## Authors
 * Luuk Kaandorp - luuk.kaandorp@student.uva.nl
-* Casper
-* Damiaan 
+* Casper Wortmann - casper.wortmann@student.uva.nl
+* Damiaan Reijnaers - damiaan.reijnaers@student.uva.nl
 
 ## Acknowledgements
-* 
+* Thanks to [Huggingface](https://huggingface.co/), the multi-task BERT model was adapted from their BERT implementations
