@@ -1,0 +1,69 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Auxilary tasks: []
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.8929, 'accuracy': 0.0195}, 'time': {'elapsed_time': '0:01:07.970869'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7255, 'accuracy': 0.753}, 'time': {'elapsed_time': '0:10:40.272953'}}
+Dev results:
+{'Circa': {'loss': 0.595, 'accuracy': 0.806}, 'time': {'elapsed_time': '0:01:09.813906'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.4492, 'accuracy': 0.8532}, 'time': {'elapsed_time': '0:10:36.574202'}}
+Dev results:
+{'Circa': {'loss': 0.5653, 'accuracy': 0.8178}, 'time': {'elapsed_time': '0:01:09.801338'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.2981, 'accuracy': 0.9031}, 'time': {'elapsed_time': '0:10:38.147084'}}
+Dev results:
+{'Circa': {'loss': 0.5762, 'accuracy': 0.8264}, 'time': {'elapsed_time': '0:01:09.821293'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2025, 'accuracy': 0.9316}, 'time': {'elapsed_time': '0:10:37.311859'}}
+Dev results:
+{'Circa': {'loss': 0.6787, 'accuracy': 0.8311}, 'time': {'elapsed_time': '0:01:10.101555'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1434, 'accuracy': 0.9505}, 'time': {'elapsed_time': '0:10:40.074747'}}
+Dev results:
+{'Circa': {'loss': 0.7472, 'accuracy': 0.8233}, 'time': {'elapsed_time': '0:01:10.080776'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 0.7134, 'accuracy': 0.8219}, 'time': {'elapsed_time': '0:01:09.815601'}}
+Testing finished
+Saving results..
+Results saved
