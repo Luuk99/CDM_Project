@@ -1,8 +1,15 @@
 # CDM_Project
 Project for Computational Dialogue Modelling (first year master AI @ UvA).
 
+This repository contains research on the effect of Multi-Task Learning (MTL) on the domain of Indirect Answer Classification (IAC). The goal is to improve a BERT model on the IAC task by training the model in a multi-task fashion. We test a number of different tasks and datasets, but it is easy for further research to expand upon this research by adding other tasks or datasets.
+
 ## Content
-TODO: add brief description of the content
+This repository consists of the following key scripts:
+* **main.py**: this is the main training loop for the model. This is the script that needs to be called when starting an experiment.
+* **utils.py**: this script contains some helpful functions and takes away a lot of clutter from the main script.
+* **multi_task/bert_mtl.py**: this script contains the Multi-Task adaption of the BERT model.
+* **data/**: contains all dataloader classes for the different datasets.
+* **data/multitask_dataloader**: script for combining multiple datasets into a single dataloader. Creates batches containing only a single task, but picks each batch from one of the datasets randomly.
 
 ## Prerequisites
 * Anaconda. Available at: https://www.anaconda.com/distribution/
@@ -20,12 +27,20 @@ conda env create -f environment.yml
 ```bash
 conda activate CDM
 ```
-TODO: add all steps to getting started
+4. Run the training script for the baseline model:
+```bash
+python main.py --progress_bar
+```
+Or provide a path to the checkpoint of an earlier run:
+```bash
+python main.py --checkpoint_path CHECKPOINT_PATH
+```
 
 ## Replicating Results
 TODO: add brief description on how to replicate the results
 
 ## Datasets
+Most datasets are gathered from the [Huggingface](https://huggingface.co/) library and require no manual downloading. The following datasets are exceptions to this:
 * For the IQAP dataset, download the zip from the [official website](http://compprag.christopherpotts.net/iqap.html) and move the csv to the **data/local_datasets/iqap** folder.
 
 ## Arguments
