@@ -1,0 +1,69 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Auxilary tasks: ['BOOLQ']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.8885, 'accuracy': 0.0226}, 'BOOLQ': {'loss': 0.6934, 'accuracy': 0.4986}, 'time': {'elapsed_time': '0:01:34.696784'}}
+Epoch 1:
+Train results:
+{'BOOLQ': {'loss': 0.6252, 'accuracy': 0.6504}, 'Circa': {'loss': 0.7447, 'accuracy': 0.7433}, 'time': {'elapsed_time': '0:16:42.666218'}}
+Dev results:
+{'Circa': {'loss': 0.6656, 'accuracy': 0.7704}, 'BOOLQ': {'loss': 0.5774, 'accuracy': 0.7011}, 'time': {'elapsed_time': '0:01:31.453046'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.5015, 'accuracy': 0.833}, 'BOOLQ': {'loss': 0.5373, 'accuracy': 0.7378}, 'time': {'elapsed_time': '0:16:38.877240'}}
+Dev results:
+{'Circa': {'loss': 0.6483, 'accuracy': 0.7988}, 'BOOLQ': {'loss': 0.5801, 'accuracy': 0.7138}, 'time': {'elapsed_time': '0:01:31.259056'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'BOOLQ': {'loss': 0.4351, 'accuracy': 0.8003}, 'Circa': {'loss': 0.3697, 'accuracy': 0.8765}, 'time': {'elapsed_time': '0:16:36.104213'}}
+Dev results:
+{'Circa': {'loss': 0.6991, 'accuracy': 0.802}, 'BOOLQ': {'loss': 0.5834, 'accuracy': 0.7145}, 'time': {'elapsed_time': '0:01:31.277669'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2681, 'accuracy': 0.9113}, 'BOOLQ': {'loss': 0.3175, 'accuracy': 0.8704}, 'time': {'elapsed_time': '0:16:35.853301'}}
+Dev results:
+{'Circa': {'loss': 0.6882, 'accuracy': 0.8045}, 'BOOLQ': {'loss': 0.6964, 'accuracy': 0.7337}, 'time': {'elapsed_time': '0:01:31.215357'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.2011, 'accuracy': 0.934}, 'BOOLQ': {'loss': 0.2387, 'accuracy': 0.9054}, 'time': {'elapsed_time': '0:16:36.758957'}}
+Dev results:
+{'Circa': {'loss': 0.8294, 'accuracy': 0.7824}, 'BOOLQ': {'loss': 0.8158, 'accuracy': 0.7373}, 'time': {'elapsed_time': '0:01:31.205750'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 0.6639, 'accuracy': 0.8067}, 'BOOLQ': {'loss': 0.7079, 'accuracy': 0.7271}, 'time': {'elapsed_time': '0:01:31.369654'}}
+Testing finished
+Saving results..
+Results saved
