@@ -297,9 +297,6 @@ def handle_unmatched(args, device, path):
         path - Path for storing the results
     """
 
-    # create a dictionary for the results of the different test scenarios
-    test_results = dict()
-
     # list of the scenarios
     scenarios = ["X wants to know about Y's food preferences.",
         "X wants to know what activities Y likes to do during weekends.",
@@ -313,69 +310,68 @@ def handle_unmatched(args, device, path):
         "Y has just told X that he/she is considering switching his/her job."
     ]
 
-    # train and test the model for each held-out scenario
-    for index, test_scenario in enumerate(scenarios):
-        # pick a random development scenario
-        left_scenarios = scenarios[:]
-        left_scenarios.remove(test_scenario)
-        dev_scenario = random.choice(left_scenarios)
+    # select the test_scenario
+    test_scenario = scenarios[args.test_scenario]
 
-        # load the model
-        print('Loading model..')
-        model, tokenizer, optimizers = initialize_model(args, device)
-        print('Model loaded')
+    # load the model
+    print('Loading model..')
+    model, tokenizer, optimizers = initialize_model(args, device)
+    print('Model loaded')
 
-        # load the datasets
-        print('Loading datasets..')
-        train_set, dev_set, test_set = LoadCircaUnmatched(args, tokenizer, test_scenario, dev_scenario)
-        train_set = {'Circa': train_set}
-        dev_set = {'Circa': dev_set}
-        test_set = {'Circa': test_set}
-        for task in args.aux_tasks:
-            if task == 'SST2':
-                train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
-            elif task == 'MNLI':
-                train_aux_set, dev_aux_set, test_aux_set = LoadMNLI(args, tokenizer)
-            elif task == 'BOOLQ':
-                train_aux_set, dev_aux_set, test_aux_set = LoadBoolQ(args, tokenizer)
-            elif task == 'IQAP':
-                train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
-            # TODO: add all other datasets
-            train_set[task] = train_aux_set
-            dev_set[task] = dev_aux_set
-            test_set[task] = test_aux_set
+    # load the datasets
+    print('Loading datasets..')
+    train_set, dev_set, test_set = LoadCircaUnmatched(args, tokenizer, test_scenario)
+    train_set = {'Circa': train_set}
+    dev_set = {'Circa': dev_set}
+    test_set = {'Circa': test_set}
+    for task in args.aux_tasks:
+        if task == 'SST2':
+            train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
+        elif task == 'MNLI':
+            train_aux_set, dev_aux_set, test_aux_set = LoadMNLI(args, tokenizer)
+        elif task == 'BOOLQ':
+            train_aux_set, dev_aux_set, test_aux_set = LoadBoolQ(args, tokenizer)
+        elif task == 'IQAP':
+            train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
+        # TODO: add all other datasets
+        train_set[task] = train_aux_set
+        dev_set[task] = dev_aux_set
+        test_set[task] = test_aux_set
 
-        # combine the dataloaders into a multi task datalaoder
-        train_set = MultiTaskDataloader(dataloaders=train_set)
-        dev_set = MultiTaskDataloader(dataloaders=dev_set)
-        test_set = MultiTaskDataloader(dataloaders=test_set)
-        print('Datasets loaded')
+    # combine the dataloaders into a multi task datalaoder
+    train_set = MultiTaskDataloader(dataloaders=train_set)
+    dev_set = MultiTaskDataloader(dataloaders=dev_set)
+    test_set = MultiTaskDataloader(dataloaders=test_set)
+    print('Datasets loaded')
 
-        # train the model
-        model, optimizers, gathered_results = train_model(
-            args = args,
-            model = model,
-            optimizers=optimizers,
-            train_set = train_set,
-            dev_set = dev_set,
-            test_set = test_set,
-            device = device,
-            path = path
-        )
+    # train the model
+    model, optimizers, gathered_results = train_model(
+        args = args,
+        model = model,
+        optimizers=optimizers,
+        train_set = train_set,
+        dev_set = dev_set,
+        test_set = test_set,
+        device = device,
+        path = path
+    )
 
-        # test the model
-        print('Starting testing..')
-        with torch.no_grad():
-            test_results = perform_epoch(args, model, optimizers, test_set, device, train=False)
-        print('Test results:')
-        print(test_results)
-        print('Testing finished')
+    # test the model
+    print('Starting testing..')
+    with torch.no_grad():
+        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False)
+    print('Test results:')
+    print(test_results)
+    print('Testing finished')
 
-        # save the results for the current scenario
-        gathered_results['testing'] = test_results
-        test_results['scenario' + str(index + 1)] = gathered_results
+    # save the testing measures
+    print('Saving results..')
+    with open(os.path.join(path, 'results.txt'), 'w') as outfile:
+        json.dump(gathered_results, outfile)
+    print('Results saved')
 
     # save the results as a json file
+    gathered_results['testing'] = test_results
     print('Saving results..')
     with open(os.path.join(path, 'results.txt'), 'w') as outfile:
         json.dump(test_results, outfile)
@@ -400,6 +396,7 @@ def main(args):
     print('Model version: {}'.format(args.model_version))
     print('Labels: {}'.format(args.labels))
     print('Setting: {}'.format(args.setting))
+    print('Test scenario: {}'.format(args.test_scenario))
     print('Auxilary tasks: {}'.format(args.aux_tasks))
     print('Auxilary task probing: {}'.format(args.aux_probing))
     print('PyTorch device: {}'.format(device))
@@ -438,6 +435,9 @@ if __name__ == '__main__':
     parser.add_argument('--setting', default='matched', type=str,
                         help='What test setting is used. Default is matched',
                         choices=['matched', 'unmatched'])
+    parser.add_argument('--test_scenario', default=None, type=int,
+                        help='What test scenario to use. Only use in combination with setting unmatched. Default is None',
+                        choices=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
     # training hyperparameters
     parser.add_argument('--max_epochs', default=5, type=int,
