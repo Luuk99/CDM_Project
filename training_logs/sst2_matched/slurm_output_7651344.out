@@ -1,0 +1,69 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Auxilary tasks: ['SST2']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.8878, 'accuracy': 0.0224}, 'SST2': {'loss': 0.1794, 'accuracy': 0.5081}, 'time': {'elapsed_time': '0:01:20.585012'}}
+Epoch 1:
+Train results:
+{'SST2': {'loss': 0.045, 'accuracy': 0.7495}, 'Circa': {'loss': 0.7583, 'accuracy': 0.7335}, 'time': {'elapsed_time': '0:15:33.277788'}}
+Dev results:
+{'Circa': {'loss': 0.6789, 'accuracy': 0.7783}, 'SST2': {'loss': 0.0299, 'accuracy': 0.8409}, 'time': {'elapsed_time': '0:01:22.433135'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'SST2': {'loss': 0.0291, 'accuracy': 0.8205}, 'Circa': {'loss': 0.5078, 'accuracy': 0.83}, 'time': {'elapsed_time': '0:15:34.774028'}}
+Dev results:
+{'Circa': {'loss': 0.6032, 'accuracy': 0.8069}, 'SST2': {'loss': 0.0245, 'accuracy': 0.8396}, 'time': {'elapsed_time': '0:01:22.444525'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'SST2': {'loss': 0.0219, 'accuracy': 0.865}, 'Circa': {'loss': 0.3656, 'accuracy': 0.8792}, 'time': {'elapsed_time': '0:15:36.864336'}}
+Dev results:
+{'Circa': {'loss': 0.5814, 'accuracy': 0.8092}, 'SST2': {'loss': 0.0303, 'accuracy': 0.8338}, 'time': {'elapsed_time': '0:01:22.448682'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2599, 'accuracy': 0.9128}, 'SST2': {'loss': 0.017, 'accuracy': 0.8898}, 'time': {'elapsed_time': '0:15:33.700208'}}
+Dev results:
+{'Circa': {'loss': 0.6688, 'accuracy': 0.8114}, 'SST2': {'loss': 0.0288, 'accuracy': 0.8237}, 'time': {'elapsed_time': '0:01:22.462275'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'SST2': {'loss': 0.0146, 'accuracy': 0.9005}, 'Circa': {'loss': 0.1991, 'accuracy': 0.9328}, 'time': {'elapsed_time': '0:15:35.373964'}}
+Dev results:
+{'Circa': {'loss': 0.8188, 'accuracy': 0.7776}, 'SST2': {'loss': 0.0264, 'accuracy': 0.841}, 'time': {'elapsed_time': '0:01:22.875376'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 0.7318, 'accuracy': 0.7987}, 'SST2': {'loss': 0.0268, 'accuracy': 0.8201}, 'time': {'elapsed_time': '0:01:34.967700'}}
+Testing finished
+Saving results..
+Results saved
