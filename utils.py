@@ -111,7 +111,7 @@ def initialize_model(args, device):
                 {'params': [p for n, p in model.bert.named_parameters() if any(nd in n for nd in no_decay)]
                 + [p for n, p in model.classifiers[index + 1].named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
             ]
-            optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lrs[index + 1]))
+        optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lrs[index + 1]))
 
     # return the model, tokenizer and optimizers
     return model, tokenizer, optimizers
