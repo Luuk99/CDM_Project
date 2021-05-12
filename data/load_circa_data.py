@@ -141,17 +141,16 @@ def LoadCircaMatched(args, tokenizer):
     return train_set, dev_set, test_set
 
 
-def LoadCircaUnmatched(args, tokenizer, test_scenario, dev_scenario):
+def LoadCircaUnmatched(args, tokenizer, test_scenario):
     """
     Function to load the Circa dataset for the unmatched setting.
     Inputs:
         args - Namespace object from the argument parser
         tokenizer - BERT tokenizer instance
         test_scenario - Scenario to reserve for testing
-        dev_scenario - Scenario to reserve for development
     Outputs:
-        train_set - Training dataset containing 8 scenarios
-        dev_set - Development dataset containing 1 scenario
+        train_set - Training dataset containing 80% of left scenarios
+        dev_set - Development dataset containing 20% of left scenarios
         test_set - Test dataset containing 1 scenario
     """
 
@@ -162,9 +161,10 @@ def LoadCircaUnmatched(args, tokenizer, test_scenario, dev_scenario):
 
     # create the test, dev and train sets
     test_set = dataset.filter(lambda example: example['context'] == test_scenario)
-    dev_set = dataset.filter(lambda example: example['context'] == dev_scenario)
-    train_set = dataset.filter(lambda example: example['context'] != test_scenario)
-    train_set = train_set.filter(lambda example: example['context'] != dev_scenario)
+    left_set = dataset.filter(lambda example: example['context'] != test_scenario)
+    left_set = left_set.train_test_split(test_size=0.2, train_size=0.8, shuffle=True)
+    train_set = left_set['train']
+    dev_set = left_set['test']
 
     # prepare the data
     train_set, dev_set, test_set = PrepareSets(args, tokenizer, train_set, dev_set, test_set)
