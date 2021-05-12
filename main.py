@@ -8,6 +8,7 @@ import datetime
 import torch
 from tqdm import tqdm
 
+
 # own imports
 from data.load_circa_data import LoadCircaMatched, LoadCircaUnmatched
 from data.load_sst2_data import LoadSST2
@@ -441,6 +442,8 @@ if __name__ == '__main__':
     parser.add_argument('--setting', default='matched', type=str,
                         help='What test setting is used. Default is matched',
                         choices=['matched', 'unmatched'])
+                        
+    # annotation options
     parser.add_argument('--impwords', nargs='?', type=str2bool, const=True, default=False,
                         help='If mentioned, Circa dataset will be annotated with most important word in answers.')
     parser.add_argument('--topics', nargs='?', type=str2bool, const=True, default=False,
@@ -449,6 +452,16 @@ if __name__ == '__main__':
                         help='If mentioned, important words annotations will NOT be pre-loaded, but re-generated')
     parser.add_argument('--nptopics', nargs='?', type=str2bool, const=False, default=True,
                         help='If mentioned, topic annotations will NOT be pre-loaded, but re-generated')
+    parser.add_argument('--tfidf', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, most important words will be determined by TF-IDF values as opposed to extracting the last noun')
+    parser.add_argument('--hybrid', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, most important words will be determined by TF-IDF values ONLY if there is no last noun')
+    parser.add_argument('--traversetopics', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, topic annotations will be generated using all-hypernym traversal')
+    parser.add_argument('--topic_depth', default=None, type=int,
+                        help='Top-down tree depth for naive case without tree traversing')
+    parser.add_argument('--label_density', default=None, type=int,
+                        help='Controls the level of allowed topic class labels')
 
     # training hyperparameters
     parser.add_argument('--max_epochs', default=10, type=int,

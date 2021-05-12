@@ -10,8 +10,8 @@ from data.annotate_circa_data import *
 import datasets
 datasets.logging.set_verbosity_error()
 
-def processCircaDataset(doAnnotateImportantWords = False, preloadImportantWords = True,
-                          doAnnotateTopics = False, preloadTopics = True, traverseTopicLemmas = True):
+def processCircaDataset(doAnnotateImportantWords = False, preloadImportantWords = True, doAnnotateTopics = False, preloadTopics = True, 
+                        traverseTopicLemmas = True, tfidf = False, hybrid = False, topic_depth = None, label_density = None):
     """
     Function that processes the Circa dataset by filtering and annotating it.
     
@@ -23,13 +23,15 @@ def processCircaDataset(doAnnotateImportantWords = False, preloadImportantWords 
     dataset = load_dataset('circa')['train']
     
     if doAnnotateImportantWords:
-        mostImportantWords = annotateImportantWords(dataset, preload = preloadImportantWords)
-        dataset = dataset.add_column('most_important_word_in_answer', mostImportantWords)
+        mostImportantWords = annotateImportantWords(dataset, preload = preloadImportantWords, context = tfidf, hybrid = hybrid)
+        #dataset = dataset.add_column('most_important_word_in_answer', mostImportantWords)
         
         # nested because important word must be present
         if doAnnotateTopics:
-            topicsForAnswer = annotateWordNetTopics(dataset, preload = preloadTopics, traverseAll = traverseTopicLemmas)
-            dataset = dataset.add_column('topic', topicsForAnswer)
+            topicsForAnswer, labelsForAnswer = annotateWordNetTopics(dataset, importantWordsColumn = mostImportantWords, preload = preloadTopics, traverseAll = traverseTopicLemmas,
+                                                                     topic_depth = topic_depth, label_density = label_density)
+            #dataset = dataset.add_column('topic_of_most_important_word', topicsForAnswer)
+            dataset = dataset.add_column('topic_label', labelsForAnswer)
     
     # filter out instances with label 'Other', 'I am not sure..' or 'N/A' (-1)
     dataset = dataset.filter(lambda example: example['goldstandard1'] != dataset.features['goldstandard1'].str2int('Other'))
@@ -116,8 +118,9 @@ def LoadCircaMatched(args, tokenizer):
     """
 
     # load the filtered dataset
-    dataset = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords,
-                                    doAnnotateTopics = args.topics, preloadTopics = args.nptopics, traverseTopicLemmas = args.traversetopics)
+    dataset = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords, doAnnotateTopics = args.topics, 
+                                  preloadTopics = args.nptopics, traverseTopicLemmas = args.traversetopics, tfidf = args.tfidf, hybrid = args.hybrid,
+                                  topic_depth = args.topic_depth, label_density = args.label_density)
 
     # split the dataset into train, dev and test
     dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
@@ -153,8 +156,9 @@ def LoadCircaUnmatched(args, tokenizer, test_scenario, dev_scenario):
     """
 
     # load the filtered dataset
-    dataset = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords,
-                                    doAnnotateTopics = args.topics, preloadTopics = args.nptopics, traverseTopicLemmas = args.traversetopics)
+    dataset = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords, doAnnotateTopics = args.topics, 
+                                  preloadTopics = args.nptopics, traverseTopicLemmas = args.traversetopics, tfidf = args.tfidf, hybrid = args.hybrid,
+                                  topic_depth = args.topic_depth, label_density = args.label_density)
 
     # create the test, dev and train sets
     test_set = dataset.filter(lambda example: example['context'] == test_scenario)
