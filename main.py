@@ -22,7 +22,7 @@ import transformers
 transformers.logging.set_verbosity_error()
 
 
-def perform_step(model, optimizer, batch, device, task_idx, train=True):
+def perform_step(model, optimizer, batch, device, task_idx, train=True, aux_probing=False):
     """
     Function that performs an epoch for the given model and task.
     Inputs:
@@ -43,6 +43,16 @@ def perform_step(model, optimizer, batch, device, task_idx, train=True):
     attention_mask = batch['attention_mask'].to(device)
     batch_labels = batch['labels'].to(device)
     token_type_ids = batch['token_type_ids'].to(device)
+
+    # check whether we are probing
+    if aux_probing and (task_idx != 0):
+        # freeze the BERT parameters
+        for parameter in model.bert.parameters():
+            parameter.requires_grad = False
+    else:
+        # unfreeze the BERT parameters
+        for parameter in model.bert.parameters():
+            parameter.requires_grad = True
 
     # pass the batch through the model
     outputs = model(input_ids, attention_mask=attention_mask, labels=batch_labels, token_type_ids=token_type_ids, task_idx=task_idx)
@@ -91,7 +101,7 @@ def perform_epoch(args, model, optimizers, dataset, device, train=True):
         dataset = tqdm(dataset)
     for (task_name, task_idx, batch) in dataset:
         # perform a step for the main task
-        step_loss, step_predictions, step_labels = perform_step(model, optimizers[task_idx], batch, device, task_idx, train)
+        step_loss, step_predictions, step_labels = perform_step(model, optimizers[task_idx], batch, device, task_idx, train, args.aux_probing)
 
         # add the results to the dictionary
         if task_name in result_dict:

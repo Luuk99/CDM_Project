@@ -99,18 +99,12 @@ def initialize_model(args, device):
     optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lrs[0]))
     # add the auxiliary task optimizers
     for index, task in enumerate(args.aux_tasks):
-        if args.aux_probing:
-            optimizer_grouped_parameters = [
-                {'params': [p for n, p in model.classifiers[index + 1].named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
-                {'params': [p for n, p in model.classifiers[index + 1].named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
-            ]
-        else:
-            optimizer_grouped_parameters = [
-                {'params': [p for n, p in model.bert.named_parameters() if not any(nd in n for nd in no_decay)]
-                + [p for n, p in model.classifiers[index + 1].named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
-                {'params': [p for n, p in model.bert.named_parameters() if any(nd in n for nd in no_decay)]
-                + [p for n, p in model.classifiers[index + 1].named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
-            ]
+        optimizer_grouped_parameters = [
+            {'params': [p for n, p in model.bert.named_parameters() if not any(nd in n for nd in no_decay)]
+            + [p for n, p in model.classifiers[index + 1].named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+            {'params': [p for n, p in model.bert.named_parameters() if any(nd in n for nd in no_decay)]
+            + [p for n, p in model.classifiers[index + 1].named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+        ]
         optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lrs[index + 1]))
 
     # return the model, tokenizer and optimizers
