@@ -1,0 +1,8 @@
+Could not find conda environment: CDM
+You can list all discoverable environments with `conda info --envs`.
+
+Traceback (most recent call last):
+  File "main.py", line 8, in <module>
+srun: error: r28n1: task 0: Exited with exit code 1
+    import torch
+ModuleNotFoundError: No module named 'torch'
