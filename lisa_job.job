@@ -22,4 +22,4 @@ cd $HOME/CDM_Project/
 # Activate your environment
 source activate CDM
 # Run your code
-srun python -u main.py --model_version QA --labels strict --setting matched --max_epochs 5 --batch_size 8 --aux_tasks BOOLQ --lrs 5e-5 2e-5 --aux_probing
+srun python -u main.py --model_version QA --labels strict --setting matched --max_epochs 5 --batch_size 8 --aux_tasks SST2 --lrs 5e-5 2e-5 --aux_probing
