@@ -1,0 +1,70 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 1
+Auxilary tasks: []
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.7982, 'accuracy': 0.1497}, 'time': {'elapsed_time': '0:01:02.061106'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7125, 'accuracy': 0.7549}, 'time': {'elapsed_time': '0:12:59.574054'}}
+Dev results:
+{'Circa': {'loss': 0.6062, 'accuracy': 0.7988}, 'time': {'elapsed_time': '0:01:04.816699'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.457, 'accuracy': 0.847}, 'time': {'elapsed_time': '0:13:06.729005'}}
+Dev results:
+{'Circa': {'loss': 0.5526, 'accuracy': 0.8153}, 'time': {'elapsed_time': '0:01:04.820232'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3025, 'accuracy': 0.8986}, 'time': {'elapsed_time': '0:13:02.245296'}}
+Dev results:
+{'Circa': {'loss': 0.6096, 'accuracy': 0.8321}, 'time': {'elapsed_time': '0:01:04.836729'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2117, 'accuracy': 0.9293}, 'time': {'elapsed_time': '0:13:04.367800'}}
+Dev results:
+{'Circa': {'loss': 0.6114, 'accuracy': 0.8193}, 'time': {'elapsed_time': '0:01:04.847640'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1495, 'accuracy': 0.9485}, 'time': {'elapsed_time': '0:13:05.581514'}}
+Dev results:
+{'Circa': {'loss': 0.7233, 'accuracy': 0.8159}, 'time': {'elapsed_time': '0:01:05.278293'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 0.5613, 'accuracy': 0.8486}, 'time': {'elapsed_time': '0:00:37.443263'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved

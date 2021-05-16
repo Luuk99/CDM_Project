@@ -1,0 +1,77 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 5
+Auxilary tasks: []
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Downloading:   0%|          | 0.00/570 [00:00<?, ?B/s]Downloading: 100%|##########| 570/570 [00:00<00:00, 354kB/s]
+Downloading:   0%|          | 0.00/440M [00:00<?, ?B/s]Downloading:   1%|          | 2.75M/440M [00:00<00:15, 27.5MB/s]Downloading:   1%|1         | 4.55M/440M [00:00<00:18, 23.7MB/s]Downloading:   2%|1         | 7.84M/440M [00:00<00:16, 25.9MB/s]Downloading:   2%|2         | 10.0M/440M [00:00<00:17, 24.6MB/s]Downloading:   3%|2         | 12.0M/440M [00:00<00:19, 22.4MB/s]Downloading:   3%|3         | 13.8M/440M [00:00<00:21, 20.0MB/s]Downloading:   4%|3         | 16.2M/440M [00:00<00:20, 20.9MB/s]Downloading:   4%|4         | 18.1M/440M [00:00<00:21, 19.2MB/s]Downloading:   5%|4         | 20.8M/440M [00:00<00:19, 21.0MB/s]Downloading:   5%|5         | 23.1M/440M [00:01<00:20, 20.5MB/s]Downloading:   6%|5         | 25.2M/440M [00:01<00:20, 20.2MB/s]Downloading:   6%|6         | 27.8M/440M [00:01<00:19, 21.5MB/s]Downloading:   7%|6         | 30.1M/440M [00:01<00:18, 22.1MB/s]Downloading:   7%|7         | 33.0M/440M [00:01<00:17, 23.4MB/s]Downloading:   8%|8         | 35.3M/440M [00:01<00:18, 21.9MB/s]Downloading:   9%|8         | 38.0M/440M [00:01<00:17, 23.1MB/s]Downloading:   9%|9         | 40.4M/440M [00:01<00:18, 21.9MB/s]Downloading:  10%|#         | 45.0M/440M [00:01<00:15, 25.9MB/s]Downloading:  11%|#         | 47.9M/440M [00:02<00:14, 26.4MB/s]Downloading:  12%|#1        | 50.8M/440M [00:02<00:14, 26.5MB/s]Downloading:  12%|#2        | 53.6M/440M [00:02<00:15, 24.4MB/s]Downloading:  13%|#2        | 56.5M/440M [00:02<00:15, 25.6MB/s]Downloading:  13%|#3        | 59.2M/440M [00:02<00:15, 24.9MB/s]Downloading:  14%|#4        | 61.8M/440M [00:02<00:17, 21.7MB/s]Downloading:  15%|#4        | 64.1M/440M [00:02<00:21, 17.6MB/s]Downloading:  15%|#4        | 66.0M/440M [00:02<00:21, 17.4MB/s]Downloading:  15%|#5        | 67.9M/440M [00:03<00:21, 17.4MB/s]Downloading:  16%|#5        | 69.8M/440M [00:03<00:21, 17.5MB/s]Downloading:  16%|#6        | 71.6M/440M [00:03<00:20, 17.7MB/s]Downloading:  17%|#6        | 74.3M/440M [00:03<00:18, 19.5MB/s]Downloading:  17%|#7        | 76.3M/440M [00:03<00:19, 18.4MB/s]Downloading:  18%|#7        | 78.2M/440M [00:03<00:19, 18.5MB/s]Downloading:  19%|#8        | 82.3M/440M [00:03<00:16, 22.1MB/s]Downloading:  19%|#9        | 85.0M/440M [00:03<00:15, 23.4MB/s]Downloading:  20%|#9        | 87.5M/440M [00:03<00:15, 22.6MB/s]Downloading:  20%|##        | 90.0M/440M [00:04<00:15, 21.9MB/s]Downloading:  21%|##1       | 93.0M/440M [00:04<00:14, 23.6MB/s]Downloading:  22%|##1       | 95.9M/440M [00:04<00:13, 25.0MB/s]Downloading:  23%|##2       | 99.5M/440M [00:04<00:12, 27.4MB/s]Downloading:  23%|##3       | 102M/440M [00:04<00:12, 27.7MB/s] Downloading:  24%|##3       | 105M/440M [00:04<00:12, 27.2MB/s]Downloading:  25%|##4       | 109M/440M [00:04<00:11, 29.5MB/s]Downloading:  26%|##5       | 112M/440M [00:04<00:10, 30.8MB/s]Downloading:  26%|##6       | 116M/440M [00:04<00:10, 32.0MB/s]Downloading:  27%|##7       | 120M/440M [00:04<00:09, 32.8MB/s]Downloading:  28%|##8       | 125M/440M [00:05<00:08, 36.9MB/s]Downloading:  29%|##9       | 129M/440M [00:05<00:08, 38.9MB/s]Downloading:  30%|###       | 134M/440M [00:05<00:07, 41.9MB/s]Downloading:  31%|###1      | 139M/440M [00:05<00:07, 39.7MB/s]Downloading:  32%|###2      | 143M/440M [00:05<00:09, 32.9MB/s]Downloading:  33%|###3      | 147M/440M [00:05<00:08, 34.9MB/s]Downloading:  34%|###4      | 151M/440M [00:05<00:08, 32.9MB/s]Downloading:  35%|###4      | 154M/440M [00:05<00:08, 32.8MB/s]Downloading:  36%|###5      | 158M/440M [00:05<00:08, 33.0MB/s]Downloading:  37%|###6      | 162M/440M [00:06<00:07, 36.1MB/s]Downloading:  38%|###7      | 166M/440M [00:06<00:07, 37.1MB/s]Downloading:  39%|###8      | 170M/440M [00:06<00:07, 36.7MB/s]Downloading:  39%|###9      | 174M/440M [00:06<00:08, 31.0MB/s]Downloading:  40%|####      | 177M/440M [00:06<00:08, 30.6MB/s]Downloading:  41%|####      | 181M/440M [00:06<00:08, 31.6MB/s]Downloading:  42%|####1     | 185M/440M [00:06<00:07, 33.3MB/s]Downloading:  43%|####2     | 188M/440M [00:06<00:07, 32.1MB/s]Downloading:  43%|####3     | 191M/440M [00:07<00:07, 31.9MB/s]Downloading:  44%|####4     | 195M/440M [00:07<00:09, 26.6MB/s]Downloading:  45%|####4     | 198M/440M [00:07<00:08, 28.6MB/s]Downloading:  46%|####5     | 203M/440M [00:07<00:07, 32.3MB/s]Downloading:  47%|####6     | 207M/440M [00:07<00:06, 34.4MB/s]Downloading:  48%|####8     | 212M/440M [00:07<00:05, 39.0MB/s]Downloading:  49%|####9     | 217M/440M [00:07<00:05, 41.1MB/s]Downloading:  50%|#####     | 221M/440M [00:07<00:05, 40.9MB/s]Downloading:  51%|#####1    | 226M/440M [00:07<00:05, 42.4MB/s]Downloading:  52%|#####2    | 231M/440M [00:07<00:04, 42.1MB/s]Downloading:  53%|#####3    | 235M/440M [00:08<00:04, 41.2MB/s]Downloading:  55%|#####4    | 240M/440M [00:08<00:04, 43.7MB/s]Downloading:  56%|#####5    | 245M/440M [00:08<00:05, 36.2MB/s]Downloading:  56%|#####6    | 249M/440M [00:08<00:05, 33.7MB/s]Downloading:  57%|#####7    | 253M/440M [00:08<00:05, 35.1MB/s]Downloading:  58%|#####8    | 256M/440M [00:08<00:05, 34.0MB/s]Downloading:  59%|#####9    | 262M/440M [00:08<00:04, 38.3MB/s]Downloading:  60%|######    | 266M/440M [00:08<00:04, 36.9MB/s]Downloading:  61%|######1   | 270M/440M [00:09<00:04, 39.0MB/s]Downloading:  62%|######2   | 275M/440M [00:09<00:04, 40.9MB/s]Downloading:  64%|######3   | 280M/440M [00:09<00:03, 43.2MB/s]Downloading:  65%|######4   | 285M/440M [00:09<00:04, 38.0MB/s]Downloading:  66%|######5   | 289M/440M [00:09<00:03, 39.3MB/s]Downloading:  67%|######6   | 294M/440M [00:09<00:03, 41.9MB/s]Downloading:  68%|######7   | 299M/440M [00:09<00:03, 38.6MB/s]Downloading:  69%|######8   | 303M/440M [00:09<00:03, 39.1MB/s]Downloading:  70%|######9   | 307M/440M [00:09<00:03, 37.6MB/s]Downloading:  71%|#######   | 311M/440M [00:10<00:03, 39.8MB/s]Downloading:  72%|#######1  | 315M/440M [00:10<00:03, 38.4MB/s]Downloading:  72%|#######2  | 319M/440M [00:10<00:03, 37.1MB/s]Downloading:  73%|#######3  | 323M/440M [00:10<00:03, 36.9MB/s]Downloading:  74%|#######4  | 327M/440M [00:10<00:03, 33.5MB/s]Downloading:  75%|#######5  | 332M/440M [00:10<00:02, 37.7MB/s]Downloading:  76%|#######6  | 336M/440M [00:10<00:02, 39.3MB/s]Downloading:  77%|#######7  | 341M/440M [00:10<00:02, 40.5MB/s]Downloading:  78%|#######8  | 345M/440M [00:10<00:02, 40.7MB/s]Downloading:  79%|#######9  | 350M/440M [00:11<00:02, 42.1MB/s]Downloading:  81%|########  | 355M/440M [00:11<00:01, 45.3MB/s]Downloading:  82%|########1 | 360M/440M [00:11<00:01, 46.1MB/s]Downloading:  83%|########2 | 365M/440M [00:11<00:01, 44.1MB/s]Downloading:  84%|########3 | 369M/440M [00:11<00:01, 40.7MB/s]Downloading:  85%|########4 | 373M/440M [00:11<00:01, 39.5MB/s]Downloading:  86%|########5 | 377M/440M [00:11<00:01, 39.5MB/s]Downloading:  87%|########6 | 381M/440M [00:11<00:01, 34.6MB/s]Downloading:  88%|########7 | 386M/440M [00:11<00:01, 38.0MB/s]Downloading:  89%|########8 | 390M/440M [00:12<00:01, 37.9MB/s]Downloading:  90%|########9 | 395M/440M [00:12<00:01, 39.2MB/s]Downloading:  91%|######### | 399M/440M [00:12<00:01, 36.9MB/s]Downloading:  91%|#########1| 403M/440M [00:12<00:01, 34.2MB/s]Downloading:  92%|#########2| 406M/440M [00:12<00:01, 30.2MB/s]Downloading:  93%|#########3| 410M/440M [00:12<00:00, 32.4MB/s]Downloading:  94%|#########4| 415M/440M [00:12<00:00, 36.2MB/s]Downloading:  95%|#########5| 419M/440M [00:12<00:00, 32.3MB/s]Downloading:  96%|#########5| 422M/440M [00:13<00:00, 30.6MB/s]Downloading:  97%|#########7| 427M/440M [00:13<00:00, 34.4MB/s]Downloading:  98%|#########7| 431M/440M [00:13<00:00, 34.9MB/s]Downloading:  99%|#########8| 435M/440M [00:13<00:00, 29.5MB/s]Downloading: 100%|#########9| 439M/440M [00:13<00:00, 31.7MB/s]Downloading: 100%|##########| 440M/440M [00:13<00:00, 32.4MB/s]
+Downloading:   0%|          | 0.00/232k [00:00<?, ?B/s]Downloading:  16%|#5        | 36.9k/232k [00:00<00:00, 226kB/s]Downloading:  44%|####4     | 102k/232k [00:00<00:00, 258kB/s] Downloading:  85%|########4 | 197k/232k [00:00<00:00, 307kB/s]Downloading: 100%|##########| 232k/232k [00:00<00:00, 454kB/s]
+Downloading:   0%|          | 0.00/28.0 [00:00<?, ?B/s]Downloading: 100%|##########| 28.0/28.0 [00:00<00:00, 26.3kB/s]
+Downloading:   0%|          | 0.00/466k [00:00<?, ?B/s]Downloading:   8%|7         | 36.9k/466k [00:00<00:01, 227kB/s]Downloading:  22%|##1       | 102k/466k [00:00<00:01, 259kB/s] Downloading:  42%|####2     | 197k/466k [00:00<00:00, 308kB/s]Downloading: 100%|##########| 466k/466k [00:00<00:00, 777kB/s]
+Model loaded
+Loading datasets..
+Downloading and preparing dataset circa/default (download: 7.41 MiB, generated: 7.77 MiB, post-processed: Unknown size, total: 15.18 MiB) to /home/lcur0659/.cache/huggingface/datasets/circa/default/1.1.0/e81f0c0a15fb62bbafdb8e6890459d4054769c045551abfe49b1fddbe37f6867...
+Dataset circa downloaded and prepared to /home/lcur0659/.cache/huggingface/datasets/circa/default/1.1.0/e81f0c0a15fb62bbafdb8e6890459d4054769c045551abfe49b1fddbe37f6867. Subsequent calls will reuse this data.
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.7973, 'accuracy': 0.1581}, 'time': {'elapsed_time': '0:01:01.979459'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7138, 'accuracy': 0.7522}, 'time': {'elapsed_time': '0:13:05.145379'}}
+Dev results:
+{'Circa': {'loss': 0.5616, 'accuracy': 0.8094}, 'time': {'elapsed_time': '0:01:05.522664'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.4559, 'accuracy': 0.847}, 'time': {'elapsed_time': '0:13:06.029454'}}
+Dev results:
+{'Circa': {'loss': 0.5215, 'accuracy': 0.8297}, 'time': {'elapsed_time': '0:01:05.458478'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3042, 'accuracy': 0.8984}, 'time': {'elapsed_time': '0:13:08.389875'}}
+Dev results:
+{'Circa': {'loss': 0.5672, 'accuracy': 0.834}, 'time': {'elapsed_time': '0:01:05.548268'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2069, 'accuracy': 0.9316}, 'time': {'elapsed_time': '0:13:25.248797'}}
+Dev results:
+{'Circa': {'loss': 0.6574, 'accuracy': 0.8286}, 'time': {'elapsed_time': '0:01:10.129494'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1502, 'accuracy': 0.9493}, 'time': {'elapsed_time': '0:14:13.249310'}}
+Dev results:
+{'Circa': {'loss': 0.6377, 'accuracy': 0.8306}, 'time': {'elapsed_time': '0:01:10.167376'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 0.5587, 'accuracy': 0.8461}, 'time': {'elapsed_time': '0:00:40.234188'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved

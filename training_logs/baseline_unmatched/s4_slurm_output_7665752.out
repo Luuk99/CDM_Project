@@ -1,0 +1,68 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 4
+Auxilary tasks: []
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.7976, 'accuracy': 0.1503}, 'time': {'elapsed_time': '0:01:01.737408'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.6979, 'accuracy': 0.7638}, 'time': {'elapsed_time': '0:13:03.300101'}}
+Dev results:
+{'Circa': {'loss': 0.5809, 'accuracy': 0.8155}, 'time': {'elapsed_time': '0:01:04.931044'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.446, 'accuracy': 0.8512}, 'time': {'elapsed_time': '0:13:00.447532'}}
+Dev results:
+{'Circa': {'loss': 0.5418, 'accuracy': 0.8466}, 'time': {'elapsed_time': '0:01:04.820509'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3052, 'accuracy': 0.8957}, 'time': {'elapsed_time': '0:13:03.951509'}}
+Dev results:
+{'Circa': {'loss': 0.544, 'accuracy': 0.8328}, 'time': {'elapsed_time': '0:01:04.789004'}}
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2196, 'accuracy': 0.925}, 'time': {'elapsed_time': '0:13:03.640590'}}
+Dev results:
+{'Circa': {'loss': 0.6176, 'accuracy': 0.8385}, 'time': {'elapsed_time': '0:01:04.859954'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1621, 'accuracy': 0.9463}, 'time': {'elapsed_time': '0:13:03.124829'}}
+Dev results:
+{'Circa': {'loss': 0.6549, 'accuracy': 0.8207}, 'time': {'elapsed_time': '0:01:04.886297'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 0.6937, 'accuracy': 0.7842}, 'time': {'elapsed_time': '0:00:36.837889'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved

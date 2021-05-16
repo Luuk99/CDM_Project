@@ -1,0 +1,70 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 7
+Auxilary tasks: []
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.7978, 'accuracy': 0.1488}, 'time': {'elapsed_time': '0:01:08.397618'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7208, 'accuracy': 0.753}, 'time': {'elapsed_time': '0:14:16.733995'}}
+Dev results:
+{'Circa': {'loss': 0.5716, 'accuracy': 0.8055}, 'time': {'elapsed_time': '0:01:10.607702'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.4642, 'accuracy': 0.8428}, 'time': {'elapsed_time': '0:14:15.976592'}}
+Dev results:
+{'Circa': {'loss': 0.5455, 'accuracy': 0.8239}, 'time': {'elapsed_time': '0:01:10.549114'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3104, 'accuracy': 0.8956}, 'time': {'elapsed_time': '0:14:19.108198'}}
+Dev results:
+{'Circa': {'loss': 0.6089, 'accuracy': 0.8207}, 'time': {'elapsed_time': '0:01:10.560156'}}
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.216, 'accuracy': 0.9274}, 'time': {'elapsed_time': '0:14:18.445759'}}
+Dev results:
+{'Circa': {'loss': 0.6286, 'accuracy': 0.828}, 'time': {'elapsed_time': '0:01:10.631949'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1597, 'accuracy': 0.9458}, 'time': {'elapsed_time': '0:14:16.899172'}}
+Dev results:
+{'Circa': {'loss': 0.6905, 'accuracy': 0.825}, 'time': {'elapsed_time': '0:01:10.639827'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 0.6245, 'accuracy': 0.8238}, 'time': {'elapsed_time': '0:00:38.571454'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved
