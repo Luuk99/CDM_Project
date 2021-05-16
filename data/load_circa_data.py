@@ -107,6 +107,20 @@ def LoadCircaMatched(args, tokenizer):
     # load the filtered dataset
     dataset = LoadFilteredDataset()
 
+    # create the dictionary for the labels
+    if args.labels == "strict":
+        label_dict = {'Yes': dataset.features['goldstandard1'].str2int('Yes'),
+        'Probably yes / sometimes yes': dataset.features['goldstandard1'].str2int('Probably yes / sometimes yes'),
+        'Yes, subject to some conditions': dataset.features['goldstandard1'].str2int('Yes, subject to some conditions'),
+        'No': dataset.features['goldstandard1'].str2int('No'),
+        'Probably no': dataset.features['goldstandard1'].str2int('Probably no'),
+        'In the middle, neither yes nor no': dataset.features['goldstandard1'].str2int('In the middle, neither yes nor no')}
+    else:
+        label_dict = {'Yes': dataset.features['goldstandard2'].str2int('Yes'),
+        'No': dataset.features['goldstandard2'].str2int('No'),
+        'In the middle, neither yes nor no': dataset.features['goldstandard2'].str2int('In the middle, neither yes nor no'),
+        'Yes, subject to some conditions': dataset.features['goldstandard2'].str2int('Yes, subject to some conditions')}
+
     # split the dataset into train, dev and test
     dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
     train_set = dataset['train']
@@ -122,8 +136,8 @@ def LoadCircaMatched(args, tokenizer):
     dev_set = create_dataloader(args, dev_set, tokenizer)
     test_set = create_dataloader(args, test_set, tokenizer)
 
-    # return the datasets
-    return train_set, dev_set, test_set
+    # return the datasets and label dict
+    return train_set, dev_set, test_set, label_dict
 
 
 def LoadCircaUnmatched(args, tokenizer, test_scenario):
@@ -142,6 +156,20 @@ def LoadCircaUnmatched(args, tokenizer, test_scenario):
     # load the filtered dataset
     dataset = LoadFilteredDataset()
 
+    # create the dictionary for the labels
+    if args.labels == "strict":
+        label_dict = {'Yes': dataset.features['goldstandard1'].str2int('Yes'),
+        'Probably yes / sometimes yes': dataset.features['goldstandard1'].str2int('Probably yes / sometimes yes'),
+        'Yes, subject to some conditions': dataset.features['goldstandard1'].str2int('Yes, subject to some conditions'),
+        'No': dataset.features['goldstandard1'].str2int('No'),
+        'Probably no': dataset.features['goldstandard1'].str2int('Probably no'),
+        'In the middle, neither yes nor no': dataset.features['goldstandard1'].str2int('In the middle, neither yes nor no')}
+    else:
+        label_dict = {'Yes': dataset.features['goldstandard2'].str2int('Yes'),
+        'No': dataset.features['goldstandard2'].str2int('No'),
+        'In the middle, neither yes nor no': dataset.features['goldstandard2'].str2int('In the middle, neither yes nor no'),
+        'Yes, subject to some conditions': dataset.features['goldstandard2'].str2int('Yes, subject to some conditions')}
+
     # create the test, dev and train sets
     test_set = dataset.filter(lambda example: example['context'] == test_scenario)
     left_set = dataset.filter(lambda example: example['context'] != test_scenario)
@@ -157,5 +185,5 @@ def LoadCircaUnmatched(args, tokenizer, test_scenario):
     dev_set = create_dataloader(args, dev_set, tokenizer)
     test_set = create_dataloader(args, test_set, tokenizer)
 
-    # return the datasets
-    return train_set, dev_set, test_set
+    # return the datasets and label dict
+    return train_set, dev_set, test_set, label_dict

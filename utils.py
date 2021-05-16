@@ -3,7 +3,7 @@ import os
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import RandomSampler
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 
 # huggingface imports
 import transformers
@@ -140,7 +140,7 @@ def create_dataloader(args, dataset, tokenizer):
 
 def compute_accuracy(preds, labels):
     """
-    Function that calculates the accuracy
+    Function that calculates the accuracy.
     Inputs:
         preds - List of batched predictions from the model
         labels - List of batched real labels
@@ -169,12 +169,45 @@ def compute_accuracy(preds, labels):
     # return the accuracy
     return acc
 
+def compute_advanced_metrics(preds, labels):
+    """
+    Function that calculates the confusion matrix and f1 scores.
+    Inputs:
+        preds - List of batched predictions from the model
+        labels - List of batched real labels
+    Outputs:
+        confusion_matrix - Confusion matrix
+        f1_scores - F1 scores for the different labels
+    """
 
-def handle_epoch_metrics(step_metrics):
+    # concatenate the predictions and labels
+    preds = torch.cat(preds, dim=0).squeeze()
+    labels = torch.cat(labels, dim=0).squeeze()
+
+    # check if regression or classification
+    if len(preds.shape) > 1:
+        preds = torch.nn.functional.softmax(preds, dim=-1)
+        preds = torch.argmax(preds, dim=-1)
+    else:
+        preds = torch.round(preds)
+        labels = torch.round(labels)
+
+    # compute the f1 scores
+    f1 = f1_score(labels.cpu().detach(), preds.cpu().detach(), average=None).tolist()
+
+    # create the confusion_matrix
+    conf_matrix = confusion_matrix(labels.cpu().detach(), preds.cpu().detach(), labels=list(range(0, labels.cpu().detach().max() + 1))).tolist()
+
+    # return the confusion matrix and f1 scores
+    return conf_matrix, f1
+
+
+def handle_epoch_metrics(step_metrics, advanced_metrics):
     """
     Function that handles the metrics per epoch.
     Inputs:
         step_metrics - Dictionary containing the results of the steps of an epoch
+        advanced_metrics - Whether to calculate confusion matrices and f1 scores
     Outputs:
         epoch_merics - Dictionary containing the averaged results of an epoch
     """
@@ -193,6 +226,12 @@ def handle_epoch_metrics(step_metrics):
 
         # add to the epoch dictionary
         epoch_metrics[task] = {'loss': task_loss, 'accuracy': task_accuracy}
+
+        # create the advanced metrics
+        if advanced_metrics and (task == 'Circa'):
+            confusion_matrix, f1 = compute_advanced_metrics(step_metrics[task]['predictions'], step_metrics[task]['labels'])
+            epoch_metrics[task]['confusion_matrix'] = confusion_matrix
+            epoch_metrics[task]['f1_scores'] = f1
 
     # return the epoch dictionary
     return epoch_metrics

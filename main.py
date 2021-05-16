@@ -70,7 +70,7 @@ def perform_step(model, optimizer, batch, device, task_idx, train=True, aux_prob
     return loss, outputs.logits, batch_labels
 
 
-def perform_epoch(args, model, optimizers, dataset, device, train=True):
+def perform_epoch(args, model, optimizers, dataset, device, train=True, advanced_metrics=False):
     """
     Function that performs an epoch for the given model.
     Inputs:
@@ -80,6 +80,7 @@ def perform_epoch(args, model, optimizers, dataset, device, train=True):
         dataset - Dataset to use
         device - PyTorch device to use
         train - Whether to train or test the model
+        advanced_metrics - Whether to calculate confusion matrices and f1 scores
     Outputs:
         epoch_results - Dictionary containing the average epoch results
     """
@@ -116,7 +117,7 @@ def perform_epoch(args, model, optimizers, dataset, device, train=True):
             }
 
     # calculate the loss and accuracy for the different tasks
-    epoch_results = handle_epoch_metrics(result_dict)
+    epoch_results = handle_epoch_metrics(result_dict, advanced_metrics)
 
     # record the end time
     end_time = timer()
@@ -233,7 +234,7 @@ def handle_matched(args, device, path):
 
     # load the datasets
     print('Loading datasets..')
-    train_set, dev_set, test_set = LoadCircaMatched(args, tokenizer)
+    train_set, dev_set, test_set, label_dict = LoadCircaMatched(args, tokenizer)
     train_set = {'Circa': train_set}
     dev_set = {'Circa': dev_set}
     test_set = {'Circa': test_set}
@@ -282,7 +283,8 @@ def handle_matched(args, device, path):
     # test the model
     print('Starting testing..')
     with torch.no_grad():
-        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False)
+        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False, advanced_metrics=args.advanced_metrics)
+        print(label_dict)
     print('Test results:')
     print(test_results)
     print('Testing finished')
@@ -290,6 +292,7 @@ def handle_matched(args, device, path):
     # save the testing measures
     if args.checkpoint_path is None:
         gathered_results['testing'] = test_results
+        gathered_results['label_dict'] = label_dict
 
         # save the results as a json file
         print('Saving results..')
@@ -330,7 +333,7 @@ def handle_unmatched(args, device, path):
 
     # load the datasets
     print('Loading datasets..')
-    train_set, dev_set, test_set = LoadCircaUnmatched(args, tokenizer, test_scenario)
+    train_set, dev_set, test_set, label_dict = LoadCircaUnmatched(args, tokenizer, test_scenario)
     train_set = {'Circa': train_set}
     dev_set = {'Circa': dev_set}
     test_set = {'Circa': test_set}
@@ -369,7 +372,8 @@ def handle_unmatched(args, device, path):
     # test the model
     print('Starting testing..')
     with torch.no_grad():
-        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False)
+        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False, advanced_metrics=args.advanced_metrics)
+        print(label_dict)
     print('Test results:')
     print(test_results)
     print('Testing finished')
@@ -382,6 +386,7 @@ def handle_unmatched(args, device, path):
 
     # save the results as a json file
     gathered_results['testing'] = test_results
+    gathered_results['label_dict'] = label_dict
     print('Saving results..')
     with open(os.path.join(path, 'results.txt'), 'w') as outfile:
         json.dump(test_results, outfile)
@@ -416,6 +421,7 @@ def main(args):
     print('Batch size: {}'.format(args.batch_size))
     print('Results directory: {}'.format(args.results_dir))
     print('Progress bar: {}'.format(args.progress_bar))
+    print('Advanced metrics: {}'.format(args.advanced_metrics))
     print('-----------------------------')
 
     # generate the path to use for the results
@@ -480,6 +486,8 @@ if __name__ == '__main__':
     parser.add_argument('--progress_bar', action='store_true',
                         help=('Use a progress bar indicator for interactive experimentation. '
                               'Not to be used in conjuction with SLURM jobs'))
+    parser.add_argument('--advanced_metrics', action='store_true',
+                        help='Generate confusion matrices and f1 scores.')
 
     # parse the arguments
     args = parser.parse_args()
