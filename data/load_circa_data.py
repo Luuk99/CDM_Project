@@ -11,7 +11,7 @@ import datasets
 datasets.logging.set_verbosity_error()
 
 def processCircaDataset(doAnnotateImportantWords = False, preloadImportantWords = True, doAnnotateTopics = False, preloadTopics = True, 
-                        traverseTopicLemmas = True, tfidf = False, hybrid = False, topic_depth = None, label_density = None):
+                        traverseTopicLemmas = True, tfidf = False, hybrid = False, topic_depth = None, label_density = None, impwordsfile = None, topicsfile = None, topiclabelsfile = None):
     """
     Function that processes the Circa dataset by filtering and annotating it.
     
@@ -22,14 +22,16 @@ def processCircaDataset(doAnnotateImportantWords = False, preloadImportantWords 
     # load the dataset
     dataset = load_dataset('circa')['train']
     
+    usedTopicLabels = None
+    
     if doAnnotateImportantWords:
-        mostImportantWords = annotateImportantWords(dataset, preload = preloadImportantWords, context = tfidf, hybrid = hybrid)
+        mostImportantWords = annotateImportantWords(dataset, preload = preloadImportantWords, context = tfidf, hybrid = hybrid, annotationFileName = impwordsfile)
         #dataset = dataset.add_column('most_important_word_in_answer', mostImportantWords)
         
         # nested because important word must be present
         if doAnnotateTopics:
-            topicsForAnswer, labelsForAnswer = annotateWordNetTopics(dataset, importantWordsColumn = mostImportantWords, preload = preloadTopics, traverseAll = traverseTopicLemmas,
-                                                                     topic_depth = topic_depth, label_density = label_density)
+            topicsForAnswer, labelsForAnswer, usedTopicLabels = annotateWordNetTopics(dataset, importantWordsColumn = mostImportantWords, preload = preloadTopics, traverseAll = traverseTopicLemmas,
+                                                                     topic_depth = topic_depth, label_density = label_density, annotationFileName = topicsfile, annotationLabelsFileName = topiclabelsfile)
             #dataset = dataset.add_column('topic_of_most_important_word', topicsForAnswer)
             dataset = dataset.add_column('topic_label', labelsForAnswer)
     
@@ -39,7 +41,7 @@ def processCircaDataset(doAnnotateImportantWords = False, preloadImportantWords 
     dataset = dataset.filter(lambda example: example['goldstandard1'] != -1)
 
     # return the dataset
-    return dataset
+    return dataset, usedTopicLabels
 
 def PrepareSets(args, tokenizer, train_set, dev_set, test_set):
     """
@@ -97,9 +99,9 @@ def PrepareSets(args, tokenizer, train_set, dev_set, test_set):
         remove_gold_label = 'goldstandard2'
     else:
         remove_gold_label = 'goldstandard1'
-    train_set = train_set.remove_columns(['answer-Y', 'canquestion-X', 'context', remove_gold_label, 'judgements', 'question-X'])
-    dev_set = dev_set.remove_columns(['answer-Y', 'canquestion-X', 'context', remove_gold_label, 'judgements', 'question-X'])
-    test_set = test_set.remove_columns(['answer-Y', 'canquestion-X', 'context', remove_gold_label, 'judgements', 'question-X'])
+    train_set = train_set.remove_columns(['canquestion-X', 'answer-Y', 'context', remove_gold_label, 'judgements', 'question-X'])
+    dev_set = dev_set.remove_columns(['canquestion-X', 'answer-Y', 'context', remove_gold_label, 'judgements', 'question-X'])
+    test_set = test_set.remove_columns(['canquestion-X', 'answer-Y', 'context', remove_gold_label, 'judgements', 'question-X'])
 
     # return the prepared datasets
     return train_set, dev_set, test_set
@@ -118,9 +120,9 @@ def LoadCircaMatched(args, tokenizer):
     """
 
     # load the filtered dataset
-    dataset = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords, doAnnotateTopics = args.topics, 
+    dataset, usedTopicLabels = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords, doAnnotateTopics = args.topics, 
                                   preloadTopics = args.nptopics, traverseTopicLemmas = args.traversetopics, tfidf = args.tfidf, hybrid = args.hybrid,
-                                  topic_depth = args.topic_depth, label_density = args.label_density)
+                                  topic_depth = args.topic_depth, label_density = args.label_density, impwordsfile = args.impwordsfile, topicsfile = args.topicsfile, topiclabelsfile = args.topiclabelsfile)
 
     # split the dataset into train, dev and test
     dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
@@ -130,15 +132,48 @@ def LoadCircaMatched(args, tokenizer):
     test_set = dataset['test']
 
     # prepare the data
-    train_set, dev_set, test_set = PrepareSets(args, tokenizer, train_set, dev_set, test_set)
+    train_set_o, dev_set_o, test_set_o = PrepareSets(args, tokenizer, train_set, dev_set, test_set)
 
-    # create dataloaders for the datasets
-    train_set = create_dataloader(args, train_set, tokenizer)
-    dev_set = create_dataloader(args, dev_set, tokenizer)
-    test_set = create_dataloader(args, test_set, tokenizer)
+    train_set_dict = {'Circa': create_dataloader(args, train_set_o, tokenizer)}
+    dev_set_dict = {'Circa': create_dataloader(args, dev_set_o, tokenizer)}
+    test_set_dict = {'Circa': create_dataloader(args, test_set_o, tokenizer)}
+
+    if 'TOPICS' in args.aux_tasks:
+        # we use only the answer for topic extracting
+        orgModelVersion = args.model_version
+        argsModified = vars(args)
+        argsModified['model_version'] = 'A'
+        
+        train_set_t, dev_set_t, test_set_t = PrepareSets(args, tokenizer, train_set, dev_set, test_set)
+    
+        # rename labels
+        train_set_t = train_set_t.remove_columns(['labels'])
+        dev_set_t = dev_set_t.remove_columns(['labels'])
+        test_set_t = test_set_t.remove_columns(['labels'])
+        
+        train_set_t = train_set_t.rename_column("topic_label", "labels")
+        dev_set_t = dev_set_t.rename_column("topic_label", "labels")
+        test_set_t = test_set_t.rename_column("topic_label", "labels")
+        
+        # for the separate aux task, remove samples without topic annotation
+        if '' in usedTopicLabels:
+            emptyLabelIndex = usedTopicLabels.index('') # actually, we know that position is last element, just to be sure, not costly
+            #emptyLabelIndex = len(usedTopicLabels) - 1
+            train_set_t = train_set_t.filter(lambda x: x['labels'] != emptyLabelIndex)
+            dev_set_t = dev_set_t.filter(lambda x: x['labels'] != emptyLabelIndex)
+            test_set_t = test_set_t.filter(lambda x: x['labels'] != emptyLabelIndex)
+        
+        print('After removing empty topics, we have %d; %d; and %d samples for (respectively) train, dev, test sets for topic aux task' % (len(train_set_t), len(dev_set_t), len(test_set_t)))
+        
+        # add to dict
+        train_set_dict['TOPICS'] = create_dataloader(args, train_set_t, tokenizer)
+        dev_set_dict['TOPICS'] = create_dataloader(args, dev_set_t, tokenizer)
+        test_set_dict['TOPICS'] = create_dataloader(args, test_set_t, tokenizer)
+        
+        argsModified['model_version'] = orgModelVersion
 
     # return the datasets
-    return train_set, dev_set, test_set
+    return train_set_dict, dev_set_dict, test_set_dict
 
 
 def LoadCircaUnmatched(args, tokenizer, test_scenario):
@@ -155,7 +190,7 @@ def LoadCircaUnmatched(args, tokenizer, test_scenario):
     """
 
     # load the filtered dataset
-    dataset = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords, doAnnotateTopics = args.topics, 
+    dataset, usedTopicLabels = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords, doAnnotateTopics = args.topics, 
                                   preloadTopics = args.nptopics, traverseTopicLemmas = args.traversetopics, tfidf = args.tfidf, hybrid = args.hybrid,
                                   topic_depth = args.topic_depth, label_density = args.label_density)
 
@@ -168,6 +203,8 @@ def LoadCircaUnmatched(args, tokenizer, test_scenario):
 
     # prepare the data
     train_set, dev_set, test_set = PrepareSets(args, tokenizer, train_set, dev_set, test_set)
+
+    print(dev_set[9])
 
     # create dataloaders for the datasets
     train_set = create_dataloader(args, train_set, tokenizer)

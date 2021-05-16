@@ -225,9 +225,6 @@ def handle_matched(args, device, path):
     # load the datasets
     print('Loading datasets..')
     train_set, dev_set, test_set = LoadCircaMatched(args, tokenizer)
-    train_set = {'Circa': train_set}
-    dev_set = {'Circa': dev_set}
-    test_set = {'Circa': test_set}
     for task in args.aux_tasks:
         if task == 'SST2':
             train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
@@ -237,6 +234,8 @@ def handle_matched(args, device, path):
             train_aux_set, dev_aux_set, test_aux_set = LoadBoolQ(args, tokenizer)
         elif task == 'IQAP':
             train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
+        elif task == 'TOPICS':
+            continue # TOPICS aux task will be loaded automatically
         # TODO: add all other datasets
         train_set[task] = train_aux_set
         dev_set[task] = dev_aux_set
@@ -322,9 +321,6 @@ def handle_unmatched(args, device, path):
     # load the datasets
     print('Loading datasets..')
     train_set, dev_set, test_set = LoadCircaUnmatched(args, tokenizer, test_scenario)
-    train_set = {'Circa': train_set}
-    dev_set = {'Circa': dev_set}
-    test_set = {'Circa': test_set}
     for task in args.aux_tasks:
         if task == 'SST2':
             train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
@@ -334,6 +330,9 @@ def handle_unmatched(args, device, path):
             train_aux_set, dev_aux_set, test_aux_set = LoadBoolQ(args, tokenizer)
         elif task == 'IQAP':
             train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
+        elif task == 'TOPICS':
+            continue # TOPICS aux task will be loaded automatically
+            
         # TODO: add all other datasets
         train_set[task] = train_aux_set
         dev_set[task] = dev_aux_set
@@ -440,7 +439,7 @@ if __name__ == '__main__':
                         help='What test scenario to use. Only use in combination with setting unmatched. Default is None',
                         choices=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
-    # annotation options
+    # annotation options (note: these do NOT initiate an auxiliary task, but adding 'TOPICS' under --aux_tasks DOES initiate (default values) of these vars)
     parser.add_argument('--impwords', nargs='?', type=str2bool, const=True, default=False,
                         help='If mentioned, Circa dataset will be annotated with most important word in answers.')
     parser.add_argument('--topics', nargs='?', type=str2bool, const=True, default=False,
@@ -459,6 +458,12 @@ if __name__ == '__main__':
                         help='Top-down tree depth for naive case without tree traversing')
     parser.add_argument('--label_density', default=None, type=int,
                         help='Controls the level of allowed topic class labels')
+    parser.add_argument('--impwordsfile', default=None, type=str,
+                        help='Plain-text important words annotation file per indirect answer. Default is fixed in annotate_circa_data.py')
+    parser.add_argument('--topicsfile', default=None, type=str,
+                        help='Plain-text topic annotation file per indirect answer. Default is fixed in annotate_circa_data.py')
+    parser.add_argument('--topiclabelsfile', default=None, type=str,
+                        help='Pickled topic label annotation file per indirect answer. Default is fixed in annotate_circa_data.py')
 
     # training hyperparameters
     parser.add_argument('--max_epochs', default=5, type=int,
@@ -475,7 +480,7 @@ if __name__ == '__main__':
     # mtl hyperparameters
     parser.add_argument('--aux_tasks', default=[], type=str, nargs='*',
                         help='Which auxiliary tasks to train on. Default is [] (STL)',
-                        choices=['IQAP', 'SST2', 'MNLI', 'BOOLQ'])
+                        choices=['IQAP', 'SST2', 'MNLI', 'BOOLQ', 'TOPICS'])
     parser.add_argument('--aux_probing', action='store_true',
                         help=('Does not train BERT on the auxiliary tasks, but only the classification layer.'))
 

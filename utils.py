@@ -67,6 +67,7 @@ def initialize_model(args, device):
         'MNLI': 3,
         'BOOLQ': 2,
         'IQAP': 4,
+        'TOPICS': 5
     }
 
     # check how many labels to use

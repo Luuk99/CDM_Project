@@ -23,7 +23,7 @@ FILENAME_TOPIC_ANNOTATIONS_LABELS   = "data/annotations/topic_annotations_labels
 # lambda calculus func for easy recursive traversing tree
 hypernyms = lambda l:l.hypernyms()
 
-def annotateImportantWords(dataset, preload = True, context = False, hybrid = False):
+def annotateImportantWords(dataset, preload = True, context = False, hybrid = False, annotationFileName = None):
     """
     Function that generates a column of the most important words for every answer
     present in a given dataset. Dumps automatically generated results in a .dat
@@ -42,12 +42,15 @@ def annotateImportantWords(dataset, preload = True, context = False, hybrid = Fa
     """
     
     importantWordsColumn = []
+    
+    if not annotationFileName:
+        annotationFileName = FILENAME_IMPORTANT_WORD_ANNOTATIONS
 
     if not preload:
         print("Starting automatic annotation of most important words\r\nErrors can be corrected manually afterwards and re-(pre-)loaded.")
         
         # automatic annotations are automatically saved (and should be corrected afterwards)
-        annotationFile = open(FILENAME_IMPORTANT_WORD_ANNOTATIONS, 'w') # note: overwriting!
+        annotationFile = open(annotationFileName, 'w') # note: overwriting!
         
         # prepare TF-IDF
         if context or hybrid:
@@ -87,13 +90,13 @@ def annotateImportantWords(dataset, preload = True, context = False, hybrid = Fa
     else:
         print("Pre-loading annotations for most important word in answer")
         
-        with open(FILENAME_IMPORTANT_WORD_ANNOTATIONS) as annotationFile:
+        with open(annotationFileName) as annotationFile:
             for annotation in annotationFile:
                 importantWordsColumn.append(annotation.split('::')[1].strip('\n'))
     
     return importantWordsColumn
     
-def annotateWordNetTopics(dataset, importantWordsColumn, preload = None, traverseAll = False, topic_depth = None, label_density = None):
+def annotateWordNetTopics(dataset, importantWordsColumn, preload = None, traverseAll = False, topic_depth = None, label_density = None, annotationFileName = None, annotationLabelsFileName = None):
     """
     Function that generates a high-level topic for every answer present in a given
     dataset. Note that the column with the most important word in the answer must
@@ -121,6 +124,12 @@ def annotateWordNetTopics(dataset, importantWordsColumn, preload = None, travers
         
     if not label_density:
         label_density = MAXIMUM_LABEL_DENSITY
+        
+    if not annotationFileName:
+        annotationFileName = FILENAME_TOPIC_ANNOTATIONS
+        
+    if not annotationLabelsFileName:
+        annotationLabelsFileName = FILENAME_TOPIC_ANNOTATIONS_LABELS
 
     topicsColumn = []
 
@@ -128,7 +137,7 @@ def annotateWordNetTopics(dataset, importantWordsColumn, preload = None, travers
         print("Starting automatic annotation of high-level topics based on most important word")
         
         # automatic annotations are automatically saved
-        annotationFile = open(FILENAME_TOPIC_ANNOTATIONS, 'w')
+        annotationFile = open(annotationFileName, 'w')
         
         if traverseAll: # after traversing, 'sweet spot' of number of labels need to be found
             allLemmasColumn = []
@@ -216,19 +225,23 @@ def annotateWordNetTopics(dataset, importantWordsColumn, preload = None, travers
         usedLabels = set(topicsColumn)
         
         print('Total amount of distinctive topic labels: %d' % len(usedLabels))
-        pickle.dump(usedLabels, open(FILENAME_TOPIC_ANNOTATIONS_LABELS, "wb"))
+        pickle.dump(usedLabels, open(annotationLabelsFileName, "wb"))
         
     else:
         print("Pre-loading annotations for topics in answer")
         
-        with open(FILENAME_TOPIC_ANNOTATIONS) as annotationFile:
+        with open(annotationFileName) as annotationFile:
             for annotation in annotationFile:
                 topicsColumn.append(annotation.split('::')[1].strip('\n'))
                 
-        usedLabels = pickle.load(open(FILENAME_TOPIC_ANNOTATIONS_LABELS, "rb" ))
+        usedLabels = pickle.load(open(annotationLabelsFileName, "rb" ))
     
     usedLabels = list(usedLabels)
     
+    if '' in usedLabels:
+        # move to end so there is no gap in label numbers if used as a task later
+        usedLabels.append(usedLabels.pop(usedLabels.index('')))
+    
     labelIndices = [usedLabels.index(label) for label in topicsColumn]
     
-    return topicsColumn, labelIndices
+    return topicsColumn, labelIndices, usedLabels
