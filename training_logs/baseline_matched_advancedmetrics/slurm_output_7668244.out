@@ -1,0 +1,72 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Test scenario: None
+Auxilary tasks: []
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+Advanced metrics: True
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.8883, 'accuracy': 0.0203}, 'time': {'elapsed_time': '0:01:09.669570'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7255, 'accuracy': 0.753}, 'time': {'elapsed_time': '0:10:46.279175'}}
+Dev results:
+{'Circa': {'loss': 0.5801, 'accuracy': 0.8096}, 'time': {'elapsed_time': '0:01:11.211435'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.4492, 'accuracy': 0.8532}, 'time': {'elapsed_time': '0:10:54.144687'}}
+Dev results:
+{'Circa': {'loss': 0.5515, 'accuracy': 0.8183}, 'time': {'elapsed_time': '0:01:11.229087'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.2981, 'accuracy': 0.9031}, 'time': {'elapsed_time': '0:10:52.722864'}}
+Dev results:
+{'Circa': {'loss': 0.5707, 'accuracy': 0.828}, 'time': {'elapsed_time': '0:01:11.217687'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2025, 'accuracy': 0.9316}, 'time': {'elapsed_time': '0:10:49.826409'}}
+Dev results:
+{'Circa': {'loss': 0.6775, 'accuracy': 0.8288}, 'time': {'elapsed_time': '0:01:11.197405'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1434, 'accuracy': 0.9505}, 'time': {'elapsed_time': '0:10:54.877322'}}
+Dev results:
+{'Circa': {'loss': 0.7564, 'accuracy': 0.8193}, 'time': {'elapsed_time': '0:01:11.542027'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+{'Yes': 0, 'Probably yes / sometimes yes': 3, 'Yes, subject to some conditions': 5, 'No': 1, 'Probably no': 4, 'In the middle, neither yes nor no': 2}
+Test results:
+{'Circa': {'loss': 0.7143, 'accuracy': 0.8241, 'confusion_matrix': [[2572, 178, 8, 81, 7, 30], [261, 1871, 8, 13, 26, 14], [28, 27, 49, 20, 2, 5], [94, 13, 1, 127, 3, 17], [32, 149, 3, 7, 33, 4], [43, 9, 1, 5, 0, 451]], 'f1_scores': [0.8709786657636303, 0.8427927927927928, 0.4875621890547263, 0.5, 0.22073578595317728, 0.8757281553398059]}, 'time': {'elapsed_time': '0:01:11.252440'}}
+Testing finished
+Saving results..
+Results saved
