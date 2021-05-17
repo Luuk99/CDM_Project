@@ -1,0 +1,70 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 0
+Auxilary tasks: ['MNLI']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Downloading and preparing dataset multi_nli/default (download: 216.34 MiB, generated: 410.92 MiB, post-processed: Unknown size, total: 627.27 MiB) to /home/lcur0362/.cache/huggingface/datasets/multi_nli/default/0.0.0/591f72eb6263d1ab527561777936b199b714cda156d35716881158a2bd144f39...
+Dataset multi_nli downloaded and prepared to /home/lcur0362/.cache/huggingface/datasets/multi_nli/default/0.0.0/591f72eb6263d1ab527561777936b199b714cda156d35716881158a2bd144f39. Subsequent calls will reuse this data.
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.7989, 'accuracy': 0.1604}, 'MNLI': {'loss': 1.1728, 'accuracy': 0.3252}, 'time': {'elapsed_time': '0:01:58.108304'}}
+Epoch 1:
+Train results:
+{'MNLI': {'loss': 0.5527, 'accuracy': 0.7764}, 'Circa': {'loss': 0.6533, 'accuracy': 0.7834}, 'time': {'elapsed_time': '4:21:14.105518'}}
+Dev results:
+{'MNLI': {'loss': 0.4703, 'accuracy': 0.8189}, 'Circa': {'loss': 0.5331, 'accuracy': 0.8328}, 'time': {'elapsed_time': '0:02:12.254931'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'MNLI': {'loss': 0.4045, 'accuracy': 0.8445}, 'Circa': {'loss': 0.4277, 'accuracy': 0.8625}, 'time': {'elapsed_time': '4:08:37.080252'}}
+Dev results:
+{'MNLI': {'loss': 0.4435, 'accuracy': 0.8327}, 'Circa': {'loss': 0.4877, 'accuracy': 0.8394}, 'time': {'elapsed_time': '0:02:03.391472'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'MNLI': {'loss': 0.3137, 'accuracy': 0.8826}, 'Circa': {'loss': 0.3154, 'accuracy': 0.8958}, 'time': {'elapsed_time': '4:05:44.191432'}}
+Dev results:
+{'Circa': {'loss': 0.5576, 'accuracy': 0.8281}, 'MNLI': {'loss': 0.5299, 'accuracy': 0.8196}, 'time': {'elapsed_time': '0:02:03.313157'}}
+---
+Epoch 4:
+Train results:
+{'MNLI': {'loss': 0.248, 'accuracy': 0.909}, 'Circa': {'loss': 0.2443, 'accuracy': 0.9167}, 'time': {'elapsed_time': '4:05:19.549266'}}
+Dev results:
+{'Circa': {'loss': 0.6275, 'accuracy': 0.8312}, 'MNLI': {'loss': 0.653, 'accuracy': 0.8139}, 'time': {'elapsed_time': '0:02:02.762874'}}
+---
+Epoch 5:
+Train results:
+{'MNLI': {'loss': 0.2037, 'accuracy': 0.9258}, 'Circa': {'loss': 0.1966, 'accuracy': 0.9337}, 'time': {'elapsed_time': '4:04:01.355602'}}
+Dev results:
+{'MNLI': {'loss': 0.7039, 'accuracy': 0.8121}, 'Circa': {'loss': 0.6659, 'accuracy': 0.8325}, 'time': {'elapsed_time': '0:02:02.789589'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'MNLI': {'loss': 0.4719, 'accuracy': 0.8151}, 'Circa': {'loss': 0.4939, 'accuracy': 0.8393}, 'time': {'elapsed_time': '0:01:32.676596'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved
