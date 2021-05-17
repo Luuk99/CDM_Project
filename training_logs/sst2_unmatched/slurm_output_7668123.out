@@ -1,0 +1,74 @@
+WARNING: $PATH does not agree with $PATH_modshare counter. The following directories' usage counters were adjusted to match. Note that this may mean that module unloading may not work correctly.
+ /home/lcur0366/.conda/envs/CDM/bin
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 5
+Auxilary tasks: ['SST2']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.887, 'accuracy': 0.0206}, 'SST2': {'loss': 0.1734, 'accuracy': 0.5156}, 'time': {'elapsed_time': '0:01:21.152518'}}
+Epoch 1:
+Train results:
+{'SST2': {'loss': 0.046, 'accuracy': 0.7461}, 'Circa': {'loss': 0.7541, 'accuracy': 0.7403}, 'time': {'elapsed_time': '0:19:46.795211'}}
+Dev results:
+{'SST2': {'loss': 0.0268, 'accuracy': 0.8375}, 'Circa': {'loss': 0.6289, 'accuracy': 0.7725}, 'time': {'elapsed_time': '0:01:24.756284'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.5211, 'accuracy': 0.8247}, 'SST2': {'loss': 0.029, 'accuracy': 0.82}, 'time': {'elapsed_time': '0:19:49.294495'}}
+Dev results:
+{'Circa': {'loss': 0.5649, 'accuracy': 0.8157}, 'SST2': {'loss': 0.0256, 'accuracy': 0.8348}, 'time': {'elapsed_time': '0:01:24.776284'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'SST2': {'loss': 0.0219, 'accuracy': 0.8602}, 'Circa': {'loss': 0.382, 'accuracy': 0.8724}, 'time': {'elapsed_time': '0:19:50.468584'}}
+Dev results:
+{'Circa': {'loss': 0.6149, 'accuracy': 0.8171}, 'SST2': {'loss': 0.0252, 'accuracy': 0.8522}, 'time': {'elapsed_time': '0:01:24.796828'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2805, 'accuracy': 0.9067}, 'SST2': {'loss': 0.0171, 'accuracy': 0.8899}, 'time': {'elapsed_time': '0:19:58.016560'}}
+Dev results:
+{'SST2': {'loss': 0.026, 'accuracy': 0.8483}, 'Circa': {'loss': 0.6297, 'accuracy': 0.8196}, 'time': {'elapsed_time': '0:01:24.766415'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.216, 'accuracy': 0.9263}, 'SST2': {'loss': 0.014, 'accuracy': 0.8975}, 'time': {'elapsed_time': '0:19:48.584201'}}
+Dev results:
+{'Circa': {'loss': 0.6546, 'accuracy': 0.819}, 'SST2': {'loss': 0.0259, 'accuracy': 0.834}, 'time': {'elapsed_time': '0:01:25.252951'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'SST2': {'loss': 0.0242, 'accuracy': 0.8406}, 'Circa': {'loss': 0.6057, 'accuracy': 0.8245}, 'time': {'elapsed_time': '0:01:08.762056'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved
