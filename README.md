@@ -60,12 +60,26 @@ optional arguments:
   --patience PATIENCE				Stops training after patience number of epochs without improvement in development accuracy. Default is 3.
   --lrs LRS					Learning rates to use per task. Default is [3e-5] (for single task learning).
   --batch_size BATCH_SIZE			Minibatch size. Default is 8.
-  --aux_tasks AUX_TASKS				Which auxiliary tasks to train on. Options: ['IQAP', 'SST2', 'MNLI', 'BOOLQ']. Default is [] (single task learning).
+  --aux_tasks AUX_TASKS				Which auxiliary tasks to train on. Options: ['IQAP', 'SST2', 'MNLI', 'BOOLQ', 'TOPICS']. Default is [] (single task learning).
   --aux_probing 				Train only the classification layers for the auxiliary tasks.
   --checkpoint_path CHECKPOINT_PATH		Path to where the model checkpoint is located. Default is None (train from scratch).
   --seed SEED					Seed to use for reproducing results. Default is 1234.
   --results_dir RESULTS_DIR			Directory where the training results should be created. Default is './mtl_results'.
   --progress_bar				Use a progress bar indicator for interactive experimentation. Not to be used in conjuction with SLURM jobs.
+  
+optional arguments related to annotation for our own auxiliary task (see paper section 3.3.6 and appendix A):
+  --impwords				If mentioned, Circa dataset will be annotated with most important word in answers.
+  --topics				If mentioned, Circa dataset will be annotated with a WordNet topic for every answer
+  --npimpwords				If mentioned, important words annotations will NOT be pre-loaded, but re-generated
+  --nptopics				If mentioned, topic annotations will NOT be pre-loaded, but re-generated
+  --tfidf				If mentioned, most important words will be determined by TF-IDF values as opposed to extracting the last noun
+  --hybrid				If mentioned, most important words will be determined by TF-IDF values ONLY if there is no last noun
+  --traversetopics				If mentioned, topic annotations will be generated using all-hypernym traversal
+  --topic_depth				Top-down tree depth for naive case without tree traversing
+  --label_density				Controls the level of allowed topic class labels
+  --impwordsfile				Plain-text important words annotation file per indirect answer. Default is fixed in annotate_circa_data.py
+  --topicsfile				Plain-text topic annotation file per indirect answer. Default is fixed in annotate_circa_data.py
+  --topiclabelsfile				Pickled topic label annotation file per indirect answer. Default is fixed in annotate_circa_data.py
 ```
 
 ## Errors
