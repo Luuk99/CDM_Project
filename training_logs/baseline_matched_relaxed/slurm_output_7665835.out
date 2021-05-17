@@ -1,0 +1,72 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: relaxed
+Setting: matched
+Test scenario: None
+Auxilary tasks: []
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.4453, 'accuracy': 0.0793}, 'time': {'elapsed_time': '0:01:07.965569'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.5192, 'accuracy': 0.7978}, 'time': {'elapsed_time': '0:10:34.737174'}}
+Dev results:
+{'Circa': {'loss': 0.4313, 'accuracy': 0.8324}, 'time': {'elapsed_time': '0:01:09.729757'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.2936, 'accuracy': 0.8971}, 'time': {'elapsed_time': '0:10:36.303398'}}
+Dev results:
+{'Circa': {'loss': 0.4062, 'accuracy': 0.8643}, 'time': {'elapsed_time': '0:01:09.714994'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.1774, 'accuracy': 0.9408}, 'time': {'elapsed_time': '0:10:34.946727'}}
+Dev results:
+{'Circa': {'loss': 0.4613, 'accuracy': 0.8656}, 'time': {'elapsed_time': '0:01:09.726037'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.1168, 'accuracy': 0.9627}, 'time': {'elapsed_time': '0:10:36.175235'}}
+Dev results:
+{'Circa': {'loss': 0.4054, 'accuracy': 0.875}, 'time': {'elapsed_time': '0:01:10.011276'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.0887, 'accuracy': 0.9726}, 'time': {'elapsed_time': '0:10:35.359477'}}
+Dev results:
+{'Circa': {'loss': 0.4772, 'accuracy': 0.8797}, 'time': {'elapsed_time': '0:01:10.110588'}}
+Saving new best model..
+New best model saved
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 0.4986, 'accuracy': 0.8713}, 'time': {'elapsed_time': '0:01:09.718077'}}
+Testing finished
+Saving results..
+Results saved

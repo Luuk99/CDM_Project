@@ -1,0 +1,74 @@
+WARNING: $PATH does not agree with $PATH_modshare counter. The following directories' usage counters were adjusted to match. Note that this may mean that module unloading may not work correctly.
+ /home/lcur0366/.conda/envs/CDM/bin
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 0
+Auxilary tasks: ['SST2']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Downloading and preparing dataset circa/default (download: 7.41 MiB, generated: 7.77 MiB, post-processed: Unknown size, total: 15.18 MiB) to /home/lcur0366/.cache/huggingface/datasets/circa/default/1.1.0/e81f0c0a15fb62bbafdb8e6890459d4054769c045551abfe49b1fddbe37f6867...
+Dataset circa downloaded and prepared to /home/lcur0366/.cache/huggingface/datasets/circa/default/1.1.0/e81f0c0a15fb62bbafdb8e6890459d4054769c045551abfe49b1fddbe37f6867. Subsequent calls will reuse this data.
+Downloading and preparing dataset sst/default (download: 6.83 MiB, generated: 3.73 MiB, post-processed: Unknown size, total: 10.56 MiB) to /home/lcur0366/.cache/huggingface/datasets/sst/default/1.0.0/b8a7889ef01c5d3ae8c379b84cc4080f8aad3ac2bc538701cbe0ac6416fb76ff...
+Dataset sst downloaded and prepared to /home/lcur0366/.cache/huggingface/datasets/sst/default/1.0.0/b8a7889ef01c5d3ae8c379b84cc4080f8aad3ac2bc538701cbe0ac6416fb76ff. Subsequent calls will reuse this data.
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.8887, 'accuracy': 0.0198}, 'SST2': {'loss': 0.1785, 'accuracy': 0.5089}, 'time': {'elapsed_time': '0:01:15.099748'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7421, 'accuracy': 0.7454}, 'SST2': {'loss': 0.0502, 'accuracy': 0.7271}, 'time': {'elapsed_time': '0:17:55.500780'}}
+Dev results:
+{'SST2': {'loss': 0.0275, 'accuracy': 0.8178}, 'Circa': {'loss': 0.6482, 'accuracy': 0.7836}, 'time': {'elapsed_time': '0:01:16.900640'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.522, 'accuracy': 0.8234}, 'SST2': {'loss': 0.0315, 'accuracy': 0.8072}, 'time': {'elapsed_time': '0:18:00.094142'}}
+Dev results:
+{'Circa': {'loss': 0.6361, 'accuracy': 0.7773}, 'SST2': {'loss': 0.0274, 'accuracy': 0.8366}, 'time': {'elapsed_time': '0:01:17.053786'}}
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3871, 'accuracy': 0.8718}, 'SST2': {'loss': 0.0241, 'accuracy': 0.8518}, 'time': {'elapsed_time': '0:18:00.230364'}}
+Dev results:
+{'Circa': {'loss': 0.6412, 'accuracy': 0.817}, 'SST2': {'loss': 0.0313, 'accuracy': 0.8204}, 'time': {'elapsed_time': '0:01:16.923342'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.29, 'accuracy': 0.902}, 'SST2': {'loss': 0.0194, 'accuracy': 0.8767}, 'time': {'elapsed_time': '0:17:56.526954'}}
+Dev results:
+{'Circa': {'loss': 0.6399, 'accuracy': 0.8141}, 'SST2': {'loss': 0.0305, 'accuracy': 0.8216}, 'time': {'elapsed_time': '0:01:16.899673'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.2157, 'accuracy': 0.9267}, 'SST2': {'loss': 0.016, 'accuracy': 0.8918}, 'time': {'elapsed_time': '0:17:57.466128'}}
+Dev results:
+{'Circa': {'loss': 0.8878, 'accuracy': 0.816}, 'SST2': {'loss': 0.0295, 'accuracy': 0.818}, 'time': {'elapsed_time': '0:01:16.957756'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'SST2': {'loss': 0.0265, 'accuracy': 0.8305}, 'Circa': {'loss': 0.735, 'accuracy': 0.7874}, 'time': {'elapsed_time': '0:00:58.833414'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved
