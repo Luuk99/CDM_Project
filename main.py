@@ -23,7 +23,7 @@ import transformers
 transformers.logging.set_verbosity_error()
 
 
-def perform_step(model, optimizer, batch, device, task_idx, train=True):
+def perform_step(model, optimizer, batch, device, task_idx, train=True, aux_probing=False):
     """
     Function that performs an epoch for the given model and task.
     Inputs:
@@ -45,6 +45,16 @@ def perform_step(model, optimizer, batch, device, task_idx, train=True):
     batch_labels = batch['labels'].to(device)
     token_type_ids = batch['token_type_ids'].to(device)
 
+    # check whether we are probing
+    if aux_probing and (task_idx != 0):
+        # freeze the BERT parameters
+        for parameter in model.bert.parameters():
+            parameter.requires_grad = False
+    else:
+        # unfreeze the BERT parameters
+        for parameter in model.bert.parameters():
+            parameter.requires_grad = True
+
     # pass the batch through the model
     outputs = model(input_ids, attention_mask=attention_mask, labels=batch_labels, token_type_ids=token_type_ids, task_idx=task_idx)
     loss = outputs.loss
@@ -61,7 +71,7 @@ def perform_step(model, optimizer, batch, device, task_idx, train=True):
     return loss, outputs.logits, batch_labels
 
 
-def perform_epoch(args, model, optimizers, dataset, device, train=True):
+def perform_epoch(args, model, optimizers, dataset, device, train=True, advanced_metrics=False):
     """
     Function that performs an epoch for the given model.
     Inputs:
@@ -71,6 +81,7 @@ def perform_epoch(args, model, optimizers, dataset, device, train=True):
         dataset - Dataset to use
         device - PyTorch device to use
         train - Whether to train or test the model
+        advanced_metrics - Whether to calculate confusion matrices and f1 scores
     Outputs:
         epoch_results - Dictionary containing the average epoch results
     """
@@ -92,7 +103,7 @@ def perform_epoch(args, model, optimizers, dataset, device, train=True):
         dataset = tqdm(dataset)
     for (task_name, task_idx, batch) in dataset:
         # perform a step for the main task
-        step_loss, step_predictions, step_labels = perform_step(model, optimizers[task_idx], batch, device, task_idx, train)
+        step_loss, step_predictions, step_labels = perform_step(model, optimizers[task_idx], batch, device, task_idx, train, args.aux_probing)
 
         # add the results to the dictionary
         if task_name in result_dict:
@@ -107,7 +118,7 @@ def perform_epoch(args, model, optimizers, dataset, device, train=True):
             }
 
     # calculate the loss and accuracy for the different tasks
-    epoch_results = handle_epoch_metrics(result_dict)
+    epoch_results = handle_epoch_metrics(result_dict, advanced_metrics)
 
     # record the end time
     end_time = timer()
@@ -277,7 +288,8 @@ def handle_matched(args, device, path):
     # test the model
     print('Starting testing..')
     with torch.no_grad():
-        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False)
+        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False, advanced_metrics=args.advanced_metrics)
+        print(label_dict)
     print('Test results:')
     print(test_results)
     print('Testing finished')
@@ -370,7 +382,8 @@ def handle_unmatched(args, device, path):
     # test the model
     print('Starting testing..')
     with torch.no_grad():
-        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False)
+        test_results = perform_epoch(args, model, optimizers, test_set, device, train=False, advanced_metrics=args.advanced_metrics)
+        print(label_dict)
     print('Test results:')
     print(test_results)
     print('Testing finished')
@@ -418,6 +431,7 @@ def main(args):
     print('Batch size: {}'.format(args.batch_size))
     print('Results directory: {}'.format(args.results_dir))
     print('Progress bar: {}'.format(args.progress_bar))
+    print('Advanced metrics: {}'.format(args.advanced_metrics))
     print('-----------------------------')
 
     # generate the path to use for the results
@@ -508,6 +522,8 @@ if __name__ == '__main__':
     parser.add_argument('--progress_bar', action='store_true',
                         help=('Use a progress bar indicator for interactive experimentation. '
                               'Not to be used in conjuction with SLURM jobs'))
+    parser.add_argument('--advanced_metrics', action='store_true',
+                        help='Generate confusion matrices and f1 scores.')
 
     # parse the arguments
     args = parser.parse_args()

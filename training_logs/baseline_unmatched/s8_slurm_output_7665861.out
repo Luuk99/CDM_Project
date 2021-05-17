@@ -1,0 +1,70 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 8
+Auxilary tasks: []
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.8028, 'accuracy': 0.1398}, 'time': {'elapsed_time': '0:01:02.655158'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.6858, 'accuracy': 0.766}, 'time': {'elapsed_time': '0:12:53.127919'}}
+Dev results:
+{'Circa': {'loss': 0.5709, 'accuracy': 0.8026}, 'time': {'elapsed_time': '0:01:04.641820'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.4356, 'accuracy': 0.8534}, 'time': {'elapsed_time': '0:12:55.624518'}}
+Dev results:
+{'Circa': {'loss': 0.5449, 'accuracy': 0.8275}, 'time': {'elapsed_time': '0:01:04.677331'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.2975, 'accuracy': 0.9017}, 'time': {'elapsed_time': '0:12:58.746898'}}
+Dev results:
+{'Circa': {'loss': 0.5882, 'accuracy': 0.8213}, 'time': {'elapsed_time': '0:01:04.731672'}}
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2074, 'accuracy': 0.9288}, 'time': {'elapsed_time': '0:12:56.961755'}}
+Dev results:
+{'Circa': {'loss': 0.6717, 'accuracy': 0.8232}, 'time': {'elapsed_time': '0:01:04.705266'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1523, 'accuracy': 0.9501}, 'time': {'elapsed_time': '0:12:57.523003'}}
+Dev results:
+{'Circa': {'loss': 0.7131, 'accuracy': 0.8308}, 'time': {'elapsed_time': '0:01:04.691909'}}
+Saving new best model..
+New best model saved
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 1.1596, 'accuracy': 0.7301}, 'time': {'elapsed_time': '0:00:35.545701'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved
