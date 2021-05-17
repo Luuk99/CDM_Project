@@ -44,7 +44,7 @@ def create_path(args):
     return path
 
 
-def initialize_model(args, device):
+def initialize_model_optimizers(args, device, topicLabelCount = 0):
     """
     Function that initializes the model, tokenizer and optimizers.
     Inputs:
@@ -67,7 +67,7 @@ def initialize_model(args, device):
         'MNLI': 3,
         'BOOLQ': 2,
         'IQAP': 4,
-        'TOPICS': 5
+        'TOPICS': topicLabelCount
     }
 
     # check how many labels to use
@@ -80,7 +80,6 @@ def initialize_model(args, device):
     model = MLTBertForSequenceClassification.from_pretrained('bert-base-uncased',
         num_labels=num_labels
     ).to(device)
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
     # add the auxilary tasks
     aux_task_labels = [task_label_dict[task] for task in args.aux_tasks]
@@ -115,8 +114,12 @@ def initialize_model(args, device):
         optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lrs[index + 1]))
 
     # return the model, tokenizer and optimizers
-    return model, tokenizer, optimizers
+    return model, optimizers
 
+def initialize_tokenizer():
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    
+    return tokenizer
 
 def create_dataloader(args, dataset, tokenizer):
     """

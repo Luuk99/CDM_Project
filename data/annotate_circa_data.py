@@ -16,9 +16,9 @@ MAXIMUM_LABEL_DENSITY = 100 # amount of most common occurring labels every QA ca
                             # the higher this amount, the more specific labels will be
                             # note that the number of total labels <= MAXIMUM_LABEL_DENSITY
                         
-FILENAME_IMPORTANT_WORD_ANNOTATIONS = "data/annotations/important_word_annotations.dat" # plaintext (format QA::annotation)
-FILENAME_TOPIC_ANNOTATIONS          = "data/annotations/topic_annotations.dat"          # plaintext (format QA::annotation)
-FILENAME_TOPIC_ANNOTATIONS_LABELS   = "data/annotations/topic_annotations_labels.p"     # pickle
+FILENAME_IMPORTANT_WORD_ANNOTATIONS = "data/annotations/important_word_annotations_tfidf.dat" # plaintext (format QA::annotation)
+FILENAME_TOPIC_ANNOTATIONS          = "data/annotations/topic_annotations_mld50.dat"          # plaintext (format QA::annotation)
+FILENAME_TOPIC_ANNOTATIONS_LABELS   = "data/annotations/topic_annotations_labels_mld50.p"     # pickle
 
 # lambda calculus func for easy recursive traversing tree
 hypernyms = lambda l:l.hypernyms()
@@ -35,8 +35,8 @@ def annotateImportantWords(dataset, preload = True, context = False, hybrid = Fa
         dataset - circa dataset loaded from huggingface
         preload - if set to True, data will be preloaded and not generated
                         (from file specified in top of this document)
-        context - if set to True, TF-IDF will be used (measuring the whole set as "context")
-        hybryd  - if set to True, TF-IDF will ONLY be used if there is no last noun
+        context - if set to True, TF-IDF will be used (measuring the whole set as "context") to extract the noun with highest TF-IDF (otherwise nothing)
+        hybrid  - if set to True, TF-IDF will ONLY be used if there is no last noun (and any PoS tagged word will be extracted)
     Outputs:
         importantWordsColumn - column of same dimensions of len(dataset) with respective words
     """
@@ -55,7 +55,17 @@ def annotateImportantWords(dataset, preload = True, context = False, hybrid = Fa
         # prepare TF-IDF
         if context or hybrid:
             vectorizer   = TfidfVectorizer(sublinear_tf=True, stop_words='english')
-            TFIDFMatrix  = vectorizer.fit_transform(dataset['answer-Y'])
+            
+            if not hybrid: # we need to remove all non-nouns to get a better TF-IDF estimate
+                fullDocumentSet = []
+                
+                for i in range(len(dataset['answer-Y'])):
+                    pos_tags = pos_tag(word_tokenize(dataset[i]['answer-Y']))
+                    fullDocumentSet.append(' '.join([pos_tag[0] for pos_tag in pos_tags if pos_tag[1][0:2] == 'NN']))
+            else:
+                fullDocumentSet = dataset['answer-Y']
+            
+            TFIDFMatrix  = vectorizer.fit_transform(fullDocumentSet)
             wordMappings = vectorizer.get_feature_names()
         
         # looping over all samples
@@ -79,7 +89,6 @@ def annotateImportantWords(dataset, preload = True, context = False, hybrid = Fa
                 
                     if wordMappingsIndex:
                         noun = wordMappings[wordMappingsIndex[0]]
-                    
                 
             annotationFile.write(dataset[i]['answer-Y'] + '::' + noun + "\n") # sequence :: doesn't occur in the answers
             
@@ -224,7 +233,7 @@ def annotateWordNetTopics(dataset, importantWordsColumn, preload = None, travers
         
         usedLabels = set(topicsColumn)
         
-        print('Total amount of distinctive topic labels: %d' % len(usedLabels))
+        print('Total amount of distinctive topic labels: ' + str(len(usedLabels)) + ' (' + ('NOT ' if '' not in usedLabels else '') + 'including empty label)')
         pickle.dump(usedLabels, open(annotationLabelsFileName, "wb"))
         
     else:

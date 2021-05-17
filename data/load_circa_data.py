@@ -106,37 +106,69 @@ def PrepareSets(args, tokenizer, train_set, dev_set, test_set):
     # return the prepared datasets
     return train_set, dev_set, test_set
 
-
-def LoadCircaMatched(args, tokenizer):
+def LoadCirca(args, tokenizer, test_scenario = None):
     """
-    Function to load the Circa dataset for the matched setting.
+    Function to load the Circa dataset for both matched and unmatched settings.
     Inputs:
         args - Namespace object from the argument parser
         tokenizer - BERT tokenizer instance
+        test_scenario - Scenario to reserve for testing (only if UNMATCHED! Otherwise MATCHED settings are loaded)
     Outputs:
-        train_set - Training dataset containing 60% of the data
-        dev_set - Development dataset containing 20% of the data
-        test_set - Test dataset containing 20% of the data
+        train_set - Training dataset containing 60% of the data if matched; 80% of left scenarios if unmatched
+        dev_set - Development dataset containing 20% of the data if matched; 20% of left scenarios if unmatched
+        test_set - Test dataset containing 20% of the data if matched; 1 scenario of unmatched
     """
-
-    # load the filtered dataset
-    dataset, usedTopicLabels = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords, doAnnotateTopics = args.topics, 
-                                  preloadTopics = args.nptopics, traverseTopicLemmas = args.traversetopics, tfidf = args.tfidf, hybrid = args.hybrid,
-                                  topic_depth = args.topic_depth, label_density = args.label_density, impwordsfile = args.impwordsfile, topicsfile = args.topicsfile, topiclabelsfile = args.topiclabelsfile)
-
+    
+    # load the filtered and annotated dataset
+    dataset, usedTopicLabels = processCircaDataset(doAnnotateImportantWords = args.impwords,
+                                                    preloadImportantWords = args.npimpwords,
+                                                    doAnnotateTopics = args.topics,
+                                                    preloadTopics = args.nptopics,
+                                                    traverseTopicLemmas = args.traversetopics,
+                                                    tfidf = args.tfidf, hybrid = args.hybrid,
+                                                    topic_depth = args.topic_depth,
+                                                    label_density = args.label_density,
+                                                    impwordsfile = args.impwordsfile,
+                                                    topicsfile = args.topicsfile,
+                                                    topiclabelsfile = args.topiclabelsfile)
+    
+    # create the dictionary for the labels
+    if args.labels == "strict":
+        circa_labels = {'Yes': dataset.features['goldstandard1'].str2int('Yes'),
+        'Probably yes / sometimes yes': dataset.features['goldstandard1'].str2int('Probably yes / sometimes yes'),
+        'Yes, subject to some conditions': dataset.features['goldstandard1'].str2int('Yes, subject to some conditions'),
+        'No': dataset.features['goldstandard1'].str2int('No'),
+        'Probably no': dataset.features['goldstandard1'].str2int('Probably no'),
+        'In the middle, neither yes nor no': dataset.features['goldstandard1'].str2int('In the middle, neither yes nor no')}
+    else:
+        circa_labels = {'Yes': dataset.features['goldstandard2'].str2int('Yes'),
+        'No': dataset.features['goldstandard2'].str2int('No'),
+        'In the middle, neither yes nor no': dataset.features['goldstandard2'].str2int('In the middle, neither yes nor no'),
+        'Yes, subject to some conditions': dataset.features['goldstandard2'].str2int('Yes, subject to some conditions')}
+        
     # split the dataset into train, dev and test
-    dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
-    train_set = dataset['train']
-    dataset = dataset['test'].train_test_split(test_size=0.5, train_size=0.5, shuffle=True)
-    dev_set = dataset['train']
-    test_set = dataset['test']
-
+    if not test_scenario: # matched
+        dataset = dataset.train_test_split(test_size=0.4, train_size=0.6, shuffle=True)
+        train_set = dataset['train']
+        dataset = dataset['test'].train_test_split(test_size=0.5, train_size=0.5, shuffle=True)
+        dev_set = dataset['train']
+        test_set = dataset['test']
+    else: # unmatched
+        test_set = dataset.filter(lambda example: example['context'] == test_scenario)
+        left_set = dataset.filter(lambda example: example['context'] != test_scenario)
+        left_set = left_set.train_test_split(test_size=0.2, train_size=0.8, shuffle=True)
+        train_set = left_set['train']
+        dev_set = left_set['test']
+        
     # prepare the data
     train_set_o, dev_set_o, test_set_o = PrepareSets(args, tokenizer, train_set, dev_set, test_set)
 
+    # create dataloaders for the datasets
     train_set_dict = {'Circa': create_dataloader(args, train_set_o, tokenizer)}
     dev_set_dict = {'Circa': create_dataloader(args, dev_set_o, tokenizer)}
     test_set_dict = {'Circa': create_dataloader(args, test_set_o, tokenizer)}
+    
+    label_dict = {'Circa': circa_labels}
 
     if 'TOPICS' in args.aux_tasks:
         # we use only the answer for topic extracting
@@ -169,47 +201,9 @@ def LoadCircaMatched(args, tokenizer):
         train_set_dict['TOPICS'] = create_dataloader(args, train_set_t, tokenizer)
         dev_set_dict['TOPICS'] = create_dataloader(args, dev_set_t, tokenizer)
         test_set_dict['TOPICS'] = create_dataloader(args, test_set_t, tokenizer)
+        label_dict['TOPICS'] = usedTopicLabels[:-1]
         
         argsModified['model_version'] = orgModelVersion
 
-    # return the datasets
-    return train_set_dict, dev_set_dict, test_set_dict
-
-
-def LoadCircaUnmatched(args, tokenizer, test_scenario):
-    """
-    Function to load the Circa dataset for the unmatched setting.
-    Inputs:
-        args - Namespace object from the argument parser
-        tokenizer - BERT tokenizer instance
-        test_scenario - Scenario to reserve for testing
-    Outputs:
-        train_set - Training dataset containing 80% of left scenarios
-        dev_set - Development dataset containing 20% of left scenarios
-        test_set - Test dataset containing 1 scenario
-    """
-
-    # load the filtered dataset
-    dataset, usedTopicLabels = processCircaDataset(doAnnotateImportantWords = args.impwords, preloadImportantWords = args.npimpwords, doAnnotateTopics = args.topics, 
-                                  preloadTopics = args.nptopics, traverseTopicLemmas = args.traversetopics, tfidf = args.tfidf, hybrid = args.hybrid,
-                                  topic_depth = args.topic_depth, label_density = args.label_density)
-
-    # create the test, dev and train sets
-    test_set = dataset.filter(lambda example: example['context'] == test_scenario)
-    left_set = dataset.filter(lambda example: example['context'] != test_scenario)
-    left_set = left_set.train_test_split(test_size=0.2, train_size=0.8, shuffle=True)
-    train_set = left_set['train']
-    dev_set = left_set['test']
-
-    # prepare the data
-    train_set, dev_set, test_set = PrepareSets(args, tokenizer, train_set, dev_set, test_set)
-
-    print(dev_set[9])
-
-    # create dataloaders for the datasets
-    train_set = create_dataloader(args, train_set, tokenizer)
-    dev_set = create_dataloader(args, dev_set, tokenizer)
-    test_set = create_dataloader(args, test_set, tokenizer)
-
-    # return the datasets
-    return train_set, dev_set, test_set
+    # return the datasets (and label dict)
+    return train_set_dict, dev_set_dict, test_set_dict, label_dict

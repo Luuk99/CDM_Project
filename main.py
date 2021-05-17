@@ -10,13 +10,13 @@ from tqdm import tqdm
 
 
 # own imports
-from data.load_circa_data import LoadCircaMatched, LoadCircaUnmatched
+from data.load_circa_data import LoadCirca
 from data.load_sst2_data import LoadSST2
 from data.load_mnli_data import LoadMNLI
 from data.load_boolq_data import LoadBoolQ
 from data.load_iqap_data import LoadIQAP
 from data.multitask_dataloader import MultiTaskDataloader
-from utils import create_dataloader, handle_epoch_metrics, create_path, initialize_model, str2bool
+from utils import create_dataloader, handle_epoch_metrics, create_path, initialize_model_optimizers, initialize_tokenizer, str2bool
 
 # set Huggingface logging to error only
 import transformers
@@ -217,14 +217,13 @@ def handle_matched(args, device, path):
         path - Path for storing the results
     """
 
-    # load the model
-    print('Loading model..')
-    model, tokenizer, optimizers = initialize_model(args, device)
-    print('Model loaded')
+    # load the tokenizer
+    tokenizer = initialize_tokenizer()
 
     # load the datasets
     print('Loading datasets..')
-    train_set, dev_set, test_set = LoadCircaMatched(args, tokenizer)
+    topicLabelCount = 0
+    train_set, dev_set, test_set, label_dict = LoadCirca(args, tokenizer)
     for task in args.aux_tasks:
         if task == 'SST2':
             train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
@@ -235,6 +234,7 @@ def handle_matched(args, device, path):
         elif task == 'IQAP':
             train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
         elif task == 'TOPICS':
+            topicLabelCount = len(label_dict['TOPICS'])
             continue # TOPICS aux task will be loaded automatically
         # TODO: add all other datasets
         train_set[task] = train_aux_set
@@ -246,6 +246,11 @@ def handle_matched(args, device, path):
     dev_set = MultiTaskDataloader(dataloaders=dev_set)
     test_set = MultiTaskDataloader(dataloaders=test_set)
     print('Datasets loaded')
+
+    # load the model
+    print('Loading model..')
+    model, optimizers = initialize_model_optimizers(args, device, topicLabelCount)
+    print('Model loaded')
 
     # check if a checkpoint is provided
     if args.checkpoint_path is not None:
@@ -280,7 +285,8 @@ def handle_matched(args, device, path):
     # save the testing measures
     if args.checkpoint_path is None:
         gathered_results['testing'] = test_results
-
+        gathered_results['label_dict'] = label_dict['Circa']
+        
         # save the results as a json file
         print('Saving results..')
         with open(os.path.join(path, 'results.txt'), 'w') as outfile:
@@ -313,14 +319,13 @@ def handle_unmatched(args, device, path):
     # select the test_scenario
     test_scenario = scenarios[args.test_scenario]
 
-    # load the model
-    print('Loading model..')
-    model, tokenizer, optimizers = initialize_model(args, device)
-    print('Model loaded')
+    # load the tokenizer
+    tokenizer = initialize_tokenizer()
 
     # load the datasets
     print('Loading datasets..')
-    train_set, dev_set, test_set = LoadCircaUnmatched(args, tokenizer, test_scenario)
+    topicLabelCount = 0
+    train_set, dev_set, test_set, label_dict = LoadCirca(args, tokenizer, test_scenario)
     for task in args.aux_tasks:
         if task == 'SST2':
             train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
@@ -331,6 +336,7 @@ def handle_unmatched(args, device, path):
         elif task == 'IQAP':
             train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
         elif task == 'TOPICS':
+            topicLabelCount = len(label_dict['TOPICS'])
             continue # TOPICS aux task will be loaded automatically
             
         # TODO: add all other datasets
@@ -343,6 +349,11 @@ def handle_unmatched(args, device, path):
     dev_set = MultiTaskDataloader(dataloaders=dev_set)
     test_set = MultiTaskDataloader(dataloaders=test_set)
     print('Datasets loaded')
+
+    # load the model
+    print('Loading model..')
+    model, optimizers = initialize_model_optimizers(args, device, topicLabelCount)
+    print('Model loaded')
 
     # train the model
     model, optimizers, gathered_results = train_model(
@@ -372,6 +383,7 @@ def handle_unmatched(args, device, path):
 
     # save the results as a json file
     gathered_results['testing'] = test_results
+    gathered_results['label_dict'] = label_dict['Circa']
     print('Saving results..')
     with open(os.path.join(path, 'results.txt'), 'w') as outfile:
         json.dump(test_results, outfile)
@@ -499,6 +511,12 @@ if __name__ == '__main__':
 
     # parse the arguments
     args = parser.parse_args()
+
+    # invoke implied arguments
+    if 'TOPICS' in args.aux_tasks and (not args.impwords or not args.topics):
+        argsModified = vars(args)
+        argsModified['impwords'] = True
+        argsModified['topics']   = True
 
     # train the model
     main(args)
