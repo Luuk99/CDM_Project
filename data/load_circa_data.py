@@ -15,6 +15,21 @@ def processCircaDataset(doAnnotateImportantWords = False, preloadImportantWords 
     """
     Function that processes the Circa dataset by filtering and annotating it.
     
+    Inputs:
+        doAnnotateImportantWords - if True, most important words will be extracted from answers where possible
+        preloadImportantWords    - if True, these important words will be pre-loaded from an existing file
+        impwordsfile             - filename of saved important words, if None, default filename (specified in annotate_circa_data.py) will be used
+        tfidf                    - if True, noun with highest TF-IDF scores will be considered as the most important word
+                                   if False, last noun of the sentence will be considered the most important
+        hybrid                   - if True, most important words will be determined by TF-IDF values ONLY if there is no last noun
+        doAnnotateTopics         - if True, a column will be added to the dataset with topic labels inferred from every answer
+        preloadTopics            - if True, these topics will be pre-loaded from an existing file
+        topicsfile               - filename of saved topics, default filename (specified in annotate_circa_data.py) will be used
+        topicslabelsfile         - filename of saved topic labels, default filename (specified in annotate_circa_data.py) will be used
+        traverseTopicLemmas      - if True, the whole synset will be traversed for the most important word in the answer, and all lemmas extracted
+                                   if False, the first lemma at a certain top-down tree-depth level will be taken (the most left synonym in the tree will always be taken)
+        topic_depth              - top-down depth level (starting at 0 from root node) at which topic is sampled if traverseTopicLemmas is False
+        label_density            - Controls the number of allowed topic class labels (>= total topic classes)
     Outputs:
         dataset - Filtered/annotated Circa dataset
     """

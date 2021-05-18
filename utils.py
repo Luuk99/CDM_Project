@@ -46,13 +46,12 @@ def create_path(args):
 
 def initialize_model_optimizers(args, device, topicLabelCount = 0):
     """
-    Function that initializes the model, tokenizer and optimizers.
+    Function that initializes the model and optimizers.
     Inputs:
         args - Namespace object from the argument parser
         device - PyTorch device to use
     Outputs:
         model - MultiTask BERT model instance
-        tokenizer - BERT tokenizer instance
         optimizers - List of optimizers
     """
 
@@ -111,6 +110,12 @@ def initialize_model_optimizers(args, device, topicLabelCount = 0):
     return model, optimizers
 
 def initialize_tokenizer():
+    """
+    Function that returns the tokenizer for the base model
+    
+    Outputs:
+        tokenizer - BERT tokenizer
+    """
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     
     return tokenizer
@@ -243,6 +248,11 @@ def handle_epoch_metrics(step_metrics, advanced_metrics):
 def str2bool(v):
     """
     Useful for bool argparsing, adopted from: https://stackoverflow.com/a/43357954/4022008
+    
+    Input:
+        v - value that should be evaluated as a Boolean
+    Output:
+        bool
     """
     if isinstance(v, bool):
        return v

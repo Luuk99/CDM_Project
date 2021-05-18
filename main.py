@@ -461,8 +461,8 @@ if __name__ == '__main__':
     parser.add_argument('--setting', default='matched', type=str,
                         help='What test setting is used. Default is matched',
                         choices=['matched', 'unmatched'])
-    parser.add_argument('--test_scenario', default=None, type=int,
-                        help='What test scenario to use. Only use in combination with setting unmatched. Default is None',
+    parser.add_argument('--test_scenario', default=0, type=int,
+                        help='What test scenario to use. Only use in combination with setting unmatched. Default is 0.',
                         choices=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
     # annotation options (note: these do NOT initiate an auxiliary task, but adding 'TOPICS' under --aux_tasks DOES initiate (default values) of these vars)
@@ -483,7 +483,7 @@ if __name__ == '__main__':
     parser.add_argument('--topic_depth', default=None, type=int,
                         help='Top-down tree depth for naive case without tree traversing')
     parser.add_argument('--label_density', default=None, type=int,
-                        help='Controls the level of allowed topic class labels')
+                        help='Controls the number of allowed topic class labels from which a topic is sampled ()')
     parser.add_argument('--impwordsfile', default=None, type=str,
                         help='Plain-text important words annotation file per indirect answer. Default is fixed in annotate_circa_data.py')
     parser.add_argument('--topicsfile', default=None, type=str,

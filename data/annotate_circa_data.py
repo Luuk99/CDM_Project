@@ -37,6 +37,7 @@ def annotateImportantWords(dataset, preload = True, context = False, hybrid = Fa
                         (from file specified in top of this document)
         context - if set to True, TF-IDF will be used (measuring the whole set as "context") to extract the noun with highest TF-IDF (otherwise nothing)
         hybrid  - if set to True, TF-IDF will ONLY be used if there is no last noun (and any PoS tagged word will be extracted)
+        annotationFileName - file to which important words are saved as plain-text to be pre-loaded later
     Outputs:
         importantWordsColumn - column of same dimensions of len(dataset) with respective words
     """
@@ -123,6 +124,11 @@ def annotateWordNetTopics(dataset, importantWordsColumn, preload = None, travers
                         (from file specified in top of this document)
         traverseAll - if set to True, all possible lemmas will be recursively
                       loaded from all hypernyms and synonyms
+        topic_depth - top-down depth level (starting at 0 from root node) at which topic is sampled if traverseTopicLemmas is False
+        label_density - controls the number of allowed topic class labels (>= total topic classes)
+        annotationFileName - file to which topics are saved as plain-text to be pre-loaded later
+        annotationLabelsFileName - file to which topic labels are saved (pickled) to be pre-loaded later
+        
     Outputs:
         importantWordsColumn - column of same dimensions of len(dataset) with respective words
     """
