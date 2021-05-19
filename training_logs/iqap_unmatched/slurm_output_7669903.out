@@ -1,0 +1,70 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 4
+Auxilary tasks: ['IQAP']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.8872, 'accuracy': 0.0201}, 'IQAP': {'loss': 1.3978, 'accuracy': 0.175}, 'time': {'elapsed_time': '0:01:02.921627'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7588, 'accuracy': 0.739}, 'IQAP': {'loss': 1.3539, 'accuracy': 0.3253}, 'time': {'elapsed_time': '0:12:49.816263'}}
+Dev results:
+{'Circa': {'loss': 0.6065, 'accuracy': 0.7941}, 'IQAP': {'loss': 1.3987, 'accuracy': 0.3125}, 'time': {'elapsed_time': '0:01:03.538994'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.5382, 'accuracy': 0.8189}, 'IQAP': {'loss': 1.2667, 'accuracy': 0.4369}, 'time': {'elapsed_time': '0:12:51.509650'}}
+Dev results:
+{'Circa': {'loss': 0.5604, 'accuracy': 0.8084}, 'IQAP': {'loss': 1.2855, 'accuracy': 0.425}, 'time': {'elapsed_time': '0:01:03.612022'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.4196, 'accuracy': 0.8601}, 'IQAP': {'loss': 1.1613, 'accuracy': 0.5115}, 'time': {'elapsed_time': '0:12:49.810777'}}
+Dev results:
+{'Circa': {'loss': 0.545, 'accuracy': 0.8261}, 'IQAP': {'loss': 1.3764, 'accuracy': 0.25}, 'time': {'elapsed_time': '0:01:03.596096'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.3161, 'accuracy': 0.8923}, 'IQAP': {'loss': 1.0474, 'accuracy': 0.6013}, 'time': {'elapsed_time': '0:12:49.729748'}}
+Dev results:
+{'Circa': {'loss': 0.6566, 'accuracy': 0.8124}, 'IQAP': {'loss': 1.2939, 'accuracy': 0.4583}, 'time': {'elapsed_time': '0:01:03.587344'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.2386, 'accuracy': 0.92}, 'IQAP': {'loss': 1.034, 'accuracy': 0.507}, 'time': {'elapsed_time': '0:12:53.029892'}}
+Dev results:
+{'Circa': {'loss': 0.6427, 'accuracy': 0.8177}, 'IQAP': {'loss': 1.2183, 'accuracy': 0.4688}, 'time': {'elapsed_time': '0:01:03.931794'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'Circa': {'loss': 0.7281, 'accuracy': 0.7608}, 'IQAP': {'loss': 1.243, 'accuracy': 0.439}, 'time': {'elapsed_time': '0:00:36.214261'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved
