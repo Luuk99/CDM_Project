@@ -44,15 +44,14 @@ def create_path(args):
     return path
 
 
-def initialize_model(args, device):
+def initialize_model_optimizers(args, device, topicLabelCount = 0):
     """
-    Function that initializes the model, tokenizer and optimizers.
+    Function that initializes the model and optimizers.
     Inputs:
         args - Namespace object from the argument parser
         device - PyTorch device to use
     Outputs:
         model - MultiTask BERT model instance
-        tokenizer - BERT tokenizer instance
         optimizers - List of optimizers
     """
 
@@ -67,6 +66,7 @@ def initialize_model(args, device):
         'MNLI': 3,
         'BOOLQ': 2,
         'IQAP': 4,
+        'TOPICS': topicLabelCount
     }
 
     # check how many labels to use
@@ -79,7 +79,6 @@ def initialize_model(args, device):
     model = MLTBertForSequenceClassification.from_pretrained('bert-base-uncased',
         num_labels=num_labels
     ).to(device)
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
     # add the auxilary tasks
     aux_task_labels = [task_label_dict[task] for task in args.aux_tasks]
@@ -108,8 +107,18 @@ def initialize_model(args, device):
         optimizers.append(AdamW(optimizer_grouped_parameters, lr=args.lrs[index + 1]))
 
     # return the model, tokenizer and optimizers
-    return model, tokenizer, optimizers
+    return model, optimizers
 
+def initialize_tokenizer():
+    """
+    Function that returns the tokenizer for the base model
+    
+    Outputs:
+        tokenizer - BERT tokenizer
+    """
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    
+    return tokenizer
 
 def create_dataloader(args, dataset, tokenizer):
     """
@@ -235,3 +244,21 @@ def handle_epoch_metrics(step_metrics, advanced_metrics):
 
     # return the epoch dictionary
     return epoch_metrics
+
+def str2bool(v):
+    """
+    Useful for bool argparsing, adopted from: https://stackoverflow.com/a/43357954/4022008
+    
+    Input:
+        v - value that should be evaluated as a Boolean
+    Output:
+        bool
+    """
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')

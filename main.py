@@ -8,14 +8,15 @@ import datetime
 import torch
 from tqdm import tqdm
 
+
 # own imports
-from data.load_circa_data import LoadCircaMatched, LoadCircaUnmatched
+from data.load_circa_data import LoadCirca
 from data.load_sst2_data import LoadSST2
 from data.load_mnli_data import LoadMNLI
 from data.load_boolq_data import LoadBoolQ
 from data.load_iqap_data import LoadIQAP
 from data.multitask_dataloader import MultiTaskDataloader
-from utils import create_dataloader, handle_epoch_metrics, create_path, initialize_model
+from utils import create_dataloader, handle_epoch_metrics, create_path, initialize_model_optimizers, initialize_tokenizer, str2bool
 
 # set Huggingface logging to error only
 import transformers
@@ -227,17 +228,13 @@ def handle_matched(args, device, path):
         path - Path for storing the results
     """
 
-    # load the model
-    print('Loading model..')
-    model, tokenizer, optimizers = initialize_model(args, device)
-    print('Model loaded')
+    # load the tokenizer
+    tokenizer = initialize_tokenizer()
 
     # load the datasets
     print('Loading datasets..')
-    train_set, dev_set, test_set, label_dict = LoadCircaMatched(args, tokenizer)
-    train_set = {'Circa': train_set}
-    dev_set = {'Circa': dev_set}
-    test_set = {'Circa': test_set}
+    topicLabelCount = 0
+    train_set, dev_set, test_set, label_dict = LoadCirca(args, tokenizer)
     for task in args.aux_tasks:
         if task == 'SST2':
             train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
@@ -247,6 +244,9 @@ def handle_matched(args, device, path):
             train_aux_set, dev_aux_set, test_aux_set = LoadBoolQ(args, tokenizer)
         elif task == 'IQAP':
             train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
+        elif task == 'TOPICS':
+            topicLabelCount = len(label_dict['TOPICS'])
+            continue # TOPICS aux task will be loaded automatically
         # TODO: add all other datasets
         train_set[task] = train_aux_set
         dev_set[task] = dev_aux_set
@@ -257,6 +257,11 @@ def handle_matched(args, device, path):
     dev_set = MultiTaskDataloader(dataloaders=dev_set)
     test_set = MultiTaskDataloader(dataloaders=test_set)
     print('Datasets loaded')
+
+    # load the model
+    print('Loading model..')
+    model, optimizers = initialize_model_optimizers(args, device, topicLabelCount)
+    print('Model loaded')
 
     # check if a checkpoint is provided
     if args.checkpoint_path is not None:
@@ -292,8 +297,8 @@ def handle_matched(args, device, path):
     # save the testing measures
     if args.checkpoint_path is None:
         gathered_results['testing'] = test_results
-        gathered_results['label_dict'] = label_dict
-
+        gathered_results['label_dict'] = label_dict['Circa']
+        
         # save the results as a json file
         print('Saving results..')
         with open(os.path.join(path, 'results.txt'), 'w') as outfile:
@@ -326,17 +331,13 @@ def handle_unmatched(args, device, path):
     # select the test_scenario
     test_scenario = scenarios[args.test_scenario]
 
-    # load the model
-    print('Loading model..')
-    model, tokenizer, optimizers = initialize_model(args, device)
-    print('Model loaded')
+    # load the tokenizer
+    tokenizer = initialize_tokenizer()
 
     # load the datasets
     print('Loading datasets..')
-    train_set, dev_set, test_set, label_dict = LoadCircaUnmatched(args, tokenizer, test_scenario)
-    train_set = {'Circa': train_set}
-    dev_set = {'Circa': dev_set}
-    test_set = {'Circa': test_set}
+    topicLabelCount = 0
+    train_set, dev_set, test_set, label_dict = LoadCirca(args, tokenizer, test_scenario)
     for task in args.aux_tasks:
         if task == 'SST2':
             train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
@@ -346,6 +347,10 @@ def handle_unmatched(args, device, path):
             train_aux_set, dev_aux_set, test_aux_set = LoadBoolQ(args, tokenizer)
         elif task == 'IQAP':
             train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
+        elif task == 'TOPICS':
+            topicLabelCount = len(label_dict['TOPICS'])
+            continue # TOPICS aux task will be loaded automatically
+            
         # TODO: add all other datasets
         train_set[task] = train_aux_set
         dev_set[task] = dev_aux_set
@@ -356,6 +361,11 @@ def handle_unmatched(args, device, path):
     dev_set = MultiTaskDataloader(dataloaders=dev_set)
     test_set = MultiTaskDataloader(dataloaders=test_set)
     print('Datasets loaded')
+
+    # load the model
+    print('Loading model..')
+    model, optimizers = initialize_model_optimizers(args, device, topicLabelCount)
+    print('Model loaded')
 
     # train the model
     model, optimizers, gathered_results = train_model(
@@ -386,7 +396,7 @@ def handle_unmatched(args, device, path):
 
     # save the results as a json file
     gathered_results['testing'] = test_results
-    gathered_results['label_dict'] = label_dict
+    gathered_results['label_dict'] = label_dict['Circa']
     print('Saving results..')
     with open(os.path.join(path, 'results.txt'), 'w') as outfile:
         json.dump(test_results, outfile)
@@ -428,7 +438,7 @@ def main(args):
     path = create_path(args)
     if not os.path.exists(path):
         os.makedirs(path)
-
+        
     # check which setting is selected
     if args.setting == 'matched':
         handle_matched(args, device, path)
@@ -451,9 +461,35 @@ if __name__ == '__main__':
     parser.add_argument('--setting', default='matched', type=str,
                         help='What test setting is used. Default is matched',
                         choices=['matched', 'unmatched'])
-    parser.add_argument('--test_scenario', default=None, type=int,
-                        help='What test scenario to use. Only use in combination with setting unmatched. Default is None',
+    parser.add_argument('--test_scenario', default=0, type=int,
+                        help='What test scenario to use. Only use in combination with setting unmatched. Default is 0.',
                         choices=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+    # annotation options (note: these do NOT initiate an auxiliary task, but adding 'TOPICS' under --aux_tasks DOES initiate (default values) of these vars)
+    parser.add_argument('--impwords', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, Circa dataset will be annotated with most important word in answers.')
+    parser.add_argument('--topics', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, Circa dataset will be annotated with a WordNet topic for every answer')
+    parser.add_argument('--npimpwords', nargs='?', type=str2bool, const=False, default=True,
+                        help='If mentioned, important words annotations will NOT be pre-loaded, but re-generated')
+    parser.add_argument('--nptopics', nargs='?', type=str2bool, const=False, default=True,
+                        help='If mentioned, topic annotations will NOT be pre-loaded, but re-generated')
+    parser.add_argument('--tfidf', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, most important words will be determined by TF-IDF values as opposed to extracting the last noun')
+    parser.add_argument('--hybrid', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, most important words will be determined by TF-IDF values ONLY if there is no last noun')
+    parser.add_argument('--traversetopics', nargs='?', type=str2bool, const=True, default=False,
+                        help='If mentioned, topic annotations will be generated using all-hypernym traversal')
+    parser.add_argument('--topic_depth', default=None, type=int,
+                        help='Top-down tree depth for naive case without tree traversing')
+    parser.add_argument('--label_density', default=None, type=int,
+                        help='Controls the number of allowed topic class labels from which a topic is sampled ()')
+    parser.add_argument('--impwordsfile', default=None, type=str,
+                        help='Plain-text important words annotation file per indirect answer. Default is fixed in annotate_circa_data.py')
+    parser.add_argument('--topicsfile', default=None, type=str,
+                        help='Plain-text topic annotation file per indirect answer. Default is fixed in annotate_circa_data.py')
+    parser.add_argument('--topiclabelsfile', default=None, type=str,
+                        help='Pickled topic label annotation file per indirect answer. Default is fixed in annotate_circa_data.py')
 
     # training hyperparameters
     parser.add_argument('--max_epochs', default=5, type=int,
@@ -470,7 +506,7 @@ if __name__ == '__main__':
     # mtl hyperparameters
     parser.add_argument('--aux_tasks', default=[], type=str, nargs='*',
                         help='Which auxiliary tasks to train on. Default is [] (STL)',
-                        choices=['IQAP', 'SST2', 'MNLI', 'BOOLQ'])
+                        choices=['IQAP', 'SST2', 'MNLI', 'BOOLQ', 'TOPICS'])
     parser.add_argument('--aux_probing', action='store_true',
                         help=('Does not train BERT on the auxiliary tasks, but only the classification layer.'))
 
@@ -491,6 +527,12 @@ if __name__ == '__main__':
 
     # parse the arguments
     args = parser.parse_args()
+
+    # invoke implied arguments
+    if 'TOPICS' in args.aux_tasks and (not args.impwords or not args.topics):
+        argsModified = vars(args)
+        argsModified['impwords'] = True
+        argsModified['topics']   = True
 
     # train the model
     main(args)
