@@ -1,0 +1,72 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: unmatched
+Test scenario: 5
+Auxilary tasks: ['MNLI']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+Advanced metrics: False
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.8876, 'accuracy': 0.0205}, 'MNLI': {'loss': 1.117, 'accuracy': 0.3327}, 'time': {'elapsed_time': '0:02:06.109670'}}
+Epoch 1:
+Train results:
+{'MNLI': {'loss': 0.5561, 'accuracy': 0.7746}, 'Circa': {'loss': 0.6549, 'accuracy': 0.7802}, 'time': {'elapsed_time': '4:01:15.701243'}}
+Dev results:
+{'Circa': {'loss': 0.5608, 'accuracy': 0.8183}, 'MNLI': {'loss': 0.4946, 'accuracy': 0.8049}, 'time': {'elapsed_time': '0:01:58.471284'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'MNLI': {'loss': 0.4035, 'accuracy': 0.8448}, 'Circa': {'loss': 0.4307, 'accuracy': 0.8608}, 'time': {'elapsed_time': '4:01:46.443749'}}
+Dev results:
+{'MNLI': {'loss': 0.4551, 'accuracy': 0.8288}, 'Circa': {'loss': 0.4929, 'accuracy': 0.8456}, 'time': {'elapsed_time': '0:01:58.347720'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'MNLI': {'loss': 0.3128, 'accuracy': 0.8826}, 'Circa': {'loss': 0.3178, 'accuracy': 0.8953}, 'time': {'elapsed_time': '3:59:08.453170'}}
+Dev results:
+{'MNLI': {'loss': 0.5068, 'accuracy': 0.8276}, 'Circa': {'loss': 0.5098, 'accuracy': 0.8405}, 'time': {'elapsed_time': '0:01:58.470541'}}
+---
+Epoch 4:
+Train results:
+{'MNLI': {'loss': 0.2488, 'accuracy': 0.9084}, 'Circa': {'loss': 0.2386, 'accuracy': 0.9185}, 'time': {'elapsed_time': '3:59:40.106521'}}
+Dev results:
+{'Circa': {'loss': 0.5488, 'accuracy': 0.8467}, 'MNLI': {'loss': 0.5945, 'accuracy': 0.8205}, 'time': {'elapsed_time': '0:01:58.566361'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'MNLI': {'loss': 0.2023, 'accuracy': 0.9265}, 'Circa': {'loss': 0.1907, 'accuracy': 0.935}, 'time': {'elapsed_time': '4:02:25.291865'}}
+Dev results:
+{'Circa': {'loss': 0.591, 'accuracy': 0.8375}, 'MNLI': {'loss': 0.624, 'accuracy': 0.8105}, 'time': {'elapsed_time': '0:02:09.031752'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+{'Yes': 0, 'Probably yes / sometimes yes': 3, 'Yes, subject to some conditions': 5, 'No': 1, 'Probably no': 4, 'In the middle, neither yes nor no': 2}
+Test results:
+{'MNLI': {'loss': 0.5707, 'accuracy': 0.8232}, 'Circa': {'loss': 0.5943, 'accuracy': 0.8307}, 'time': {'elapsed_time': '0:01:40.200608'}}
+Testing finished
+Saving results..
+Results saved
+Saving results..
+Results saved
