@@ -46,16 +46,18 @@ Most datasets are gathered from the [Huggingface](https://huggingface.co/) libra
 ## Arguments
 The models can be trained with the following command line arguments:
 ```bash
-usage: main.py [-h] [--model_version MODEL_VERSION] [--labels LABELS] [--setting SETTING]
-		    [--max_epochs MAX_EPOCHS] [--patience PATIENCE] [--lrs LRS] [--batch_size BATCH_SIZE]
-		    [--aux_tasks AUX_TASKS] [--aux_probing] [--checkpoint_path CHECKPOINT_PATH]
-		    [--seed SEED] [--results_dir RESULTS_DIR] [--progress_bar]
+usage: main.py [-h] [--model_version MODEL_VERSION] [--labels LABELS] [--setting SETTING] 
+		    [--test_scenario TEST_SCENARIO] [--max_epochs MAX_EPOCHS] [--patience PATIENCE] 
+		    [--lrs LRS] [--batch_size BATCH_SIZE] [--aux_tasks AUX_TASKS] [--aux_probing] 
+		    [--checkpoint_path CHECKPOINT_PATH] [--seed SEED] [--results_dir RESULTS_DIR] 
+		    [--progress_bar]
 
 optional arguments:
   -h, --help            			Show help message and exit.
   --model_version MODEL_VERSION			What model version to use. Options: ['QA', 'Q', 'A']. Default is 'QA' (Question and Answer).
   --labels LABELS				What labels to use. Options: ['strict', 'relaxed']. Default is 'strict'.
   --setting SETTING				What test setting is used. Options: ['matched', 'unmatched']. Default is 'matched'.
+  --test_scenario				Which scenario to reserve for testing in the unmatched setting. Only use in combination with setting unmatched. Options: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]. Default is 0.
   --max_epochs MAX_EPOCHS			Maximum number of epochs to train for. Default is 5.
   --patience PATIENCE				Stops training after patience number of epochs without improvement in development accuracy. Default is 3.
   --lrs LRS					Learning rates to use per task. Default is [3e-5] (for single task learning).
