@@ -298,7 +298,7 @@ def handle_matched(args, device, path):
     if args.checkpoint_path is None:
         gathered_results['testing'] = test_results
         gathered_results['label_dict'] = label_dict['Circa']
-        
+
         # save the results as a json file
         print('Saving results..')
         with open(os.path.join(path, 'results.txt'), 'w') as outfile:
@@ -350,7 +350,7 @@ def handle_unmatched(args, device, path):
         elif task == 'TOPICS':
             topicLabelCount = len(label_dict['TOPICS'])
             continue # TOPICS aux task will be loaded automatically
-            
+
         # TODO: add all other datasets
         train_set[task] = train_aux_set
         dev_set[task] = dev_aux_set
@@ -438,7 +438,7 @@ def main(args):
     path = create_path(args)
     if not os.path.exists(path):
         os.makedirs(path)
-        
+
     # check which setting is selected
     if args.setting == 'matched':
         handle_matched(args, device, path)
@@ -462,7 +462,7 @@ if __name__ == '__main__':
                         help='What test setting is used. Default is matched',
                         choices=['matched', 'unmatched'])
     parser.add_argument('--test_scenario', default=0, type=int,
-                        help='What test scenario to use. Only use in combination with setting unmatched. Default is 0.',
+                        help='Which scenario to reserve for testing in the unmatched setting. Only use in combination with setting unmatched. Default is 0.',
                         choices=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
     # annotation options (note: these do NOT initiate an auxiliary task, but adding 'TOPICS' under --aux_tasks DOES initiate (default values) of these vars)
