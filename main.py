@@ -8,7 +8,6 @@ import datetime
 import torch
 from tqdm import tqdm
 
-
 # own imports
 from data.load_circa_data import LoadCirca
 from data.load_sst2_data import LoadSST2
@@ -133,7 +132,7 @@ def perform_epoch(args, model, optimizers, dataset, device, train=True, advanced
     return epoch_results
 
 
-def train_model(args, model, optimizers, train_set, dev_set, test_set, device, path):
+def train_model(args, model, optimizers, train_set, dev_set, device, path, convergence_data="Circa"):
     """
     Function for training the model.
     Inputs:
@@ -142,7 +141,6 @@ def train_model(args, model, optimizers, train_set, dev_set, test_set, device, p
         optimizers - List of optimizers to use
         train_set - Multitask training set
         dev_set - Multitask development set
-        test_set - Multitask test set
         device - PyTorch device to use
         path - Path for storing the results
     Outputs:
@@ -188,9 +186,9 @@ def train_model(args, model, optimizers, train_set, dev_set, test_set, device, p
         gathered_results['epoch' + str(epoch)] = {'train' : train_results, 'dev': dev_results}
 
         # check whether to save the model or not
-        if (round(dev_results['Circa']['accuracy'], 3) > best_dev_acc):
+        if (round(dev_results[convergence_data]['accuracy'], 3) > best_dev_acc):
             epochs_no_improvement = 0
-            best_dev_acc = round(dev_results['Circa']['accuracy'], 3)
+            best_dev_acc = round(dev_results[convergence_data]['accuracy'], 3)
             print('Saving new best model..')
             torch.save({
                 'epoch': epoch,
@@ -235,6 +233,12 @@ def handle_matched(args, device, path):
     print('Loading datasets..')
     topicLabelCount = 0
     train_set, dev_set, test_set, label_dict = LoadCirca(args, tokenizer)
+
+    # Initialize pretraining
+    if args.pretrain:
+        pretrain_set = {}
+        predev_set = {}
+
     for task in args.aux_tasks:
         if task == 'SST2':
             train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
@@ -248,20 +252,45 @@ def handle_matched(args, device, path):
             topicLabelCount = len(label_dict['TOPICS'])
             continue # TOPICS aux task will be loaded automatically
         # TODO: add all other datasets
-        train_set[task] = train_aux_set
-        dev_set[task] = dev_aux_set
-        test_set[task] = test_aux_set
-
-    # combine the dataloaders into a multi task datalaoder
-    train_set = MultiTaskDataloader(dataloaders=train_set)
-    dev_set = MultiTaskDataloader(dataloaders=dev_set)
-    test_set = MultiTaskDataloader(dataloaders=test_set)
-    print('Datasets loaded')
+        if args.pretrain:
+            # Use the auxiliary task for pretraining
+            pretrain_set[task] = train_aux_set
+            predev_set[task] = dev_aux_set
+        else:
+            # Use the auxiliary task for multi-task learning
+            train_set[task] = train_aux_set
+            dev_set[task] = dev_aux_set
+            test_set[task] = test_aux_set
 
     # load the model
     print('Loading model..')
     model, optimizers = initialize_model_optimizers(args, device, topicLabelCount)
     print('Model loaded')
+
+    # combine the dataloaders into a multi task dataloader
+    train_set = MultiTaskDataloader(dataloaders=train_set)
+    dev_set = MultiTaskDataloader(dataloaders=dev_set)
+    test_set = MultiTaskDataloader(dataloaders=test_set)
+    print('Datasets loaded for training')
+
+    if args.pretrain:
+        pretrain_set = MultiTaskDataloader(dataloaders=pretrain_set)
+        predev_set = MultiTaskDataloader(dataloaders=predev_set)
+        print('Datasets loaded for pretraining')
+        print('Start pretraining on datasets: ', pretrain_set.tasknames)
+
+        # Pretrain on the auxiliary task, use auxiliary task as dev criterium.
+        convergence_data = args.aux_tasks[0]
+        model, optimizers, gathered_results = train_model(
+            args = args,
+            model = model,
+            optimizers = optimizers,
+            train_set = pretrain_set,
+            dev_set = predev_set,
+            device = device,
+            path = path,
+            convergence_data = convergence_data
+        )
 
     # check if a checkpoint is provided
     if args.checkpoint_path is not None:
@@ -274,13 +303,13 @@ def handle_matched(args, device, path):
         print('Model loaded')
     else:
         # train the model
+        print('Start training on datasets: ', train_set.tasknames)
         model, optimizers, gathered_results = train_model(
             args = args,
             model = model,
             optimizers=optimizers,
             train_set = train_set,
             dev_set = dev_set,
-            test_set = test_set,
             device = device,
             path = path
         )
@@ -374,7 +403,6 @@ def handle_unmatched(args, device, path):
         optimizers=optimizers,
         train_set = train_set,
         dev_set = dev_set,
-        test_set = test_set,
         device = device,
         path = path
     )
@@ -432,6 +460,7 @@ def main(args):
     print('Results directory: {}'.format(args.results_dir))
     print('Progress bar: {}'.format(args.progress_bar))
     print('Advanced metrics: {}'.format(args.advanced_metrics))
+    print('Pretrain: {}'.format(args.pretrain))
     print('-----------------------------')
 
     # generate the path to use for the results
@@ -496,6 +525,8 @@ if __name__ == '__main__':
                         help='Maximum number of epochs to train for. Default is 5')
     parser.add_argument('--patience', default=3, type=int,
                         help='Stops training after patience number of epochs without improvement in dev accuracy. Default is 3')
+    parser.add_argument('--pretrain', action='store_true',
+                        help=('Pretrains on the auxiliary task, and finetunes on the Circa dataset.'))
 
     # optimizer hyperparameters
     parser.add_argument('--lrs', default=[3e-5], type=float, nargs='*',
