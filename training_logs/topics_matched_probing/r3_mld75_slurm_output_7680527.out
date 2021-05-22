@@ -1,0 +1,110 @@
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/feature_extraction/image.py:167: DeprecationWarning: `np.int` is a deprecated alias for the builtin `int`. To silence this warning, use `int` by itself. Doing this will not modify any behavior and is safe. When replacing `np.int`, you may wish to use e.g. `np.int64` or `np.int32` to specify the precision. If you wish to review your current use, check the release note link for additional information.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  dtype=np.int):
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/least_angle.py:35: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  eps=np.finfo(np.float).eps,
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/least_angle.py:597: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  eps=np.finfo(np.float).eps, copy_X=True, fit_path=True,
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/least_angle.py:836: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  eps=np.finfo(np.float).eps, copy_X=True, fit_path=True,
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/least_angle.py:862: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  eps=np.finfo(np.float).eps, positive=False):
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/least_angle.py:1097: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  max_n_alphas=1000, n_jobs=None, eps=np.finfo(np.float).eps,
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/least_angle.py:1344: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  max_n_alphas=1000, n_jobs=None, eps=np.finfo(np.float).eps,
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/least_angle.py:1480: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  eps=np.finfo(np.float).eps, copy_X=True, positive=False):
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/randomized_l1.py:152: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  precompute=False, eps=np.finfo(np.float).eps,
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/randomized_l1.py:320: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  eps=np.finfo(np.float).eps, random_state=None,
+/sw/arch/Debian10/EB_production/2019/software/Anaconda3/2018.12/lib/python3.7/site-packages/sklearn/linear_model/randomized_l1.py:580: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  eps=4 * np.finfo(np.float).eps, n_jobs=None,
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Test scenario: None
+Auxilary tasks: ['TOPICS']
+Auxilary task probing: True
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading datasets..
+Pre-loading annotations for most important word in answer
+[nltk_data] Downloading package wordnet to /home/lcur0659/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+Pre-loading annotations for topics in answer
+After removing empty topics, we have 12068; 4040; and 3999 samples for (respectively) train, dev, test sets for topic aux task
+Datasets loaded
+Loading model..
+Model loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'TOPICS': {'loss': 3.7212, 'accuracy': 0.0124}, 'Circa': {'loss': 1.7959, 'accuracy': 0.1588}, 'time': {'elapsed_time': '0:01:54.940176'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7628, 'accuracy': 0.737}, 'TOPICS': {'loss': 1.7237, 'accuracy': 0.5808}, 'time': {'elapsed_time': '0:17:37.426612'}}
+Dev results:
+{'TOPICS': {'loss': 0.9935, 'accuracy': 0.7814}, 'Circa': {'loss': 0.6321, 'accuracy': 0.7737}, 'time': {'elapsed_time': '0:01:59.575323'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'TOPICS': {'loss': 0.6984, 'accuracy': 0.8372}, 'Circa': {'loss': 0.5287, 'accuracy': 0.8227}, 'time': {'elapsed_time': '0:17:59.808584'}}
+Dev results:
+{'Circa': {'loss': 0.6224, 'accuracy': 0.7903}, 'TOPICS': {'loss': 0.7926, 'accuracy': 0.823}, 'time': {'elapsed_time': '0:01:59.553855'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'TOPICS': {'loss': 0.3821, 'accuracy': 0.9115}, 'Circa': {'loss': 0.3915, 'accuracy': 0.869}, 'time': {'elapsed_time': '0:17:49.431073'}}
+Dev results:
+{'Circa': {'loss': 0.6329, 'accuracy': 0.795}, 'TOPICS': {'loss': 0.7565, 'accuracy': 0.8451}, 'time': {'elapsed_time': '0:02:02.355280'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2956, 'accuracy': 0.903}, 'TOPICS': {'loss': 0.2338, 'accuracy': 0.9435}, 'time': {'elapsed_time': '0:17:46.693518'}}
+Dev results:
+{'Circa': {'loss': 0.7514, 'accuracy': 0.7989}, 'TOPICS': {'loss': 0.7442, 'accuracy': 0.8471}, 'time': {'elapsed_time': '0:02:00.231764'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'TOPICS': {'loss': 0.1739, 'accuracy': 0.9577}, 'Circa': {'loss': 0.234, 'accuracy': 0.9199}, 'time': {'elapsed_time': '0:17:42.119288'}}
+Dev results:
+{'Circa': {'loss': 0.7075, 'accuracy': 0.8059}, 'TOPICS': {'loss': 0.7493, 'accuracy': 0.8548}, 'time': {'elapsed_time': '0:01:59.597470'}}
+Saving new best model..
+New best model saved
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'TOPICS': {'loss': 0.6852, 'accuracy': 0.8576}, 'Circa': {'loss': 0.7026, 'accuracy': 0.814}, 'time': {'elapsed_time': '0:02:05.688007'}}
+Testing finished
+Saving results..
+Results saved
