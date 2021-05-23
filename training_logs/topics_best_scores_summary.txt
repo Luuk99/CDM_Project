@@ -1,0 +1,42 @@
+CIRCA
+-------
+
+Topics matched:
+
+R1: MLD300 0.8136
+R2: MLD30  0.8105
+R3: MLD30  0.8081
+
+Topics matched probing:
+
+R1: MLD500 0.8167
+R2: MLD30  0.8204
+R3: MLD150 0.8195
+
+
+Topics matched relaxed:
+
+R1: MLD150 0.8626
+R2: MLD300 0.8659
+R3: MLD75  0.8723
+
+TOPICS
+--------
+
+Topics matched:
+
+R1: MLD50 0.8567
+R2: MLD50 0.8543
+R3: MLD50 0.851
+
+Topics matched probing:
+
+R1: MLD40 0.8707
+R2: MLD30 0.8774
+R3: MLD20 0.868
+
+Topics matched relaxed:
+
+R1: MLD20 0.8478
+R2: MLD20 0.8597
+R3: MLD20 0.8495
