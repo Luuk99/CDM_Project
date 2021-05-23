@@ -1,0 +1,73 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Test scenario: None
+Auxilary tasks: ['TOPICS']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+-----------------------------
+Loading datasets..
+Pre-loading annotations for most important word in answer
+[nltk_data] Downloading package wordnet to /home/lcur0362/nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+Pre-loading annotations for topics in answer
+After removing empty topics, we have 12068; 3991; and 4048 samples for (respectively) train, dev, test sets for topic aux task
+Datasets loaded
+Loading model..
+Model loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.7989, 'accuracy': 0.1545}, 'TOPICS': {'loss': 3.175, 'accuracy': 0.1159}, 'time': {'elapsed_time': '0:01:56.487154'}}
+Epoch 1:
+Train results:
+{'TOPICS': {'loss': 1.7001, 'accuracy': 0.5263}, 'Circa': {'loss': 0.7581, 'accuracy': 0.739}, 'time': {'elapsed_time': '0:18:07.056656'}}
+Dev results:
+{'TOPICS': {'loss': 1.0423, 'accuracy': 0.7293}, 'Circa': {'loss': 0.6606, 'accuracy': 0.7845}, 'time': {'elapsed_time': '0:01:59.022690'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.5224, 'accuracy': 0.8257}, 'TOPICS': {'loss': 0.7855, 'accuracy': 0.8015}, 'time': {'elapsed_time': '0:18:10.425177'}}
+Dev results:
+{'Circa': {'loss': 0.6258, 'accuracy': 0.8044}, 'TOPICS': {'loss': 0.736, 'accuracy': 0.8213}, 'time': {'elapsed_time': '0:01:58.870213'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'TOPICS': {'loss': 0.4876, 'accuracy': 0.8767}, 'Circa': {'loss': 0.3746, 'accuracy': 0.8764}, 'time': {'elapsed_time': '0:18:07.393684'}}
+Dev results:
+{'Circa': {'loss': 0.619, 'accuracy': 0.7898}, 'TOPICS': {'loss': 0.6832, 'accuracy': 0.8405}, 'time': {'elapsed_time': '0:01:59.089590'}}
+---
+Epoch 4:
+Train results:
+{'TOPICS': {'loss': 0.341, 'accuracy': 0.9145}, 'Circa': {'loss': 0.2774, 'accuracy': 0.9074}, 'time': {'elapsed_time': '0:18:06.252141'}}
+Dev results:
+{'TOPICS': {'loss': 0.6594, 'accuracy': 0.8477}, 'Circa': {'loss': 0.7081, 'accuracy': 0.8077}, 'time': {'elapsed_time': '0:01:59.062032'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.2047, 'accuracy': 0.9303}, 'TOPICS': {'loss': 0.2551, 'accuracy': 0.9367}, 'time': {'elapsed_time': '0:18:10.458234'}}
+Dev results:
+{'Circa': {'loss': 0.7339, 'accuracy': 0.8039}, 'TOPICS': {'loss': 0.6622, 'accuracy': 0.8584}, 'time': {'elapsed_time': '0:01:59.118626'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+Test results:
+{'TOPICS': {'loss': 0.6637, 'accuracy': 0.851}, 'Circa': {'loss': 0.6969, 'accuracy': 0.8068}, 'time': {'elapsed_time': '0:01:59.948899'}}
+Testing finished
+Saving results..
+Results saved
