@@ -1,0 +1,107 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Test scenario: 0
+Auxilary tasks: ['SST2']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+Advanced metrics: True
+Pretrain: True
+-----------------------------
+Loading datasets..
+Loading model..
+Model loaded
+Datasets loaded for training
+Datasets loaded for pretraining
+Start pretraining on datasets:  ('SST2',)
+Starting training..
+Epoch 0:
+Dev results:
+{'SST2': {'loss': 1.9329, 'accuracy': 0.0}, 'time': {'elapsed_time': '0:00:12.465005'}}
+Epoch 1:
+Train results:
+{'SST2': {'loss': 0.4522, 'accuracy': 0.7999}, 'time': {'elapsed_time': '0:05:00.138263'}}
+Dev results:
+{'SST2': {'loss': 0.3602, 'accuracy': 0.8529}, 'time': {'elapsed_time': '0:00:12.927139'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'SST2': {'loss': 0.2257, 'accuracy': 0.9167}, 'time': {'elapsed_time': '0:05:04.385002'}}
+Dev results:
+{'SST2': {'loss': 0.5263, 'accuracy': 0.8365}, 'time': {'elapsed_time': '0:00:12.956304'}}
+---
+Epoch 3:
+Train results:
+{'SST2': {'loss': 0.1209, 'accuracy': 0.9553}, 'time': {'elapsed_time': '0:05:04.728267'}}
+Dev results:
+{'SST2': {'loss': 0.4894, 'accuracy': 0.8456}, 'time': {'elapsed_time': '0:00:12.946076'}}
+---
+Epoch 4:
+Train results:
+{'SST2': {'loss': 0.0792, 'accuracy': 0.9725}, 'time': {'elapsed_time': '0:05:05.540298'}}
+Dev results:
+{'SST2': {'loss': 0.6136, 'accuracy': 0.8338}, 'time': {'elapsed_time': '0:00:13.113373'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Start training on datasets:  ('Circa',)
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 2.8937, 'accuracy': 0.344}, 'time': {'elapsed_time': '0:01:12.845216'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.8006, 'accuracy': 0.7136}, 'time': {'elapsed_time': '0:11:02.166511'}}
+Dev results:
+{'Circa': {'loss': 0.6527, 'accuracy': 0.7747}, 'time': {'elapsed_time': '0:01:12.820287'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.5289, 'accuracy': 0.8243}, 'time': {'elapsed_time': '0:11:00.315958'}}
+Dev results:
+{'Circa': {'loss': 0.5868, 'accuracy': 0.7999}, 'time': {'elapsed_time': '0:01:12.859605'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3854, 'accuracy': 0.8714}, 'time': {'elapsed_time': '0:11:20.063649'}}
+Dev results:
+{'Circa': {'loss': 0.6466, 'accuracy': 0.7996}, 'time': {'elapsed_time': '0:01:18.825079'}}
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2831, 'accuracy': 0.905}, 'time': {'elapsed_time': '0:11:18.088839'}}
+Dev results:
+{'Circa': {'loss': 0.6879, 'accuracy': 0.8088}, 'time': {'elapsed_time': '0:01:12.847603'}}
+Saving new best model..
+New best model saved
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.2076, 'accuracy': 0.9299}, 'time': {'elapsed_time': '0:11:03.099182'}}
+Dev results:
+{'Circa': {'loss': 0.7267, 'accuracy': 0.8026}, 'time': {'elapsed_time': '0:01:12.865661'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+{'Circa': {'Yes': 0, 'Probably yes / sometimes yes': 3, 'Yes, subject to some conditions': 5, 'No': 1, 'Probably no': 4, 'In the middle, neither yes nor no': 2}}
+Test results:
+{'Circa': {'loss': 0.6837, 'accuracy': 0.8052, 'confusion_matrix': [[2535, 241, 12, 73, 9, 29], [284, 1800, 18, 12, 49, 17], [31, 37, 47, 4, 1, 5], [116, 12, 12, 107, 5, 16], [30, 133, 5, 3, 42, 4], [30, 9, 2, 6, 1, 455]], 'f1_scores': [0.8556962025316456, 0.8159564823209428, 0.42533936651583704, 0.452431289640592, 0.25925925925925924, 0.8843537414965986]}, 'time': {'elapsed_time': '0:01:12.892927'}}
+Testing finished
+Saving results..
+Results saved

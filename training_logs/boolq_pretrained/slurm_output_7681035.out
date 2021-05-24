@@ -1,0 +1,115 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Test scenario: 0
+Auxilary tasks: ['BOOLQ']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05, 3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+Advanced metrics: True
+Pretrain: True
+-----------------------------
+Loading datasets..
+Loading model..
+Model loaded
+Datasets loaded for training:  ('Circa',)
+Start pretraining on datasets:  ('BOOLQ',)
+Starting training..
+Epoch 0:
+Dev results:
+{'BOOLQ': {'loss': 1.9898, 'accuracy': 0.0}, 'time': {'elapsed_time': '0:00:18.663590'}}
+Epoch 1:
+Train results:
+{'BOOLQ': {'loss': 0.6667, 'accuracy': 0.6364}, 'time': {'elapsed_time': '0:06:01.149536'}}
+Dev results:
+{'BOOLQ': {'loss': 0.6115, 'accuracy': 0.6618}, 'time': {'elapsed_time': '0:00:20.681557'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'BOOLQ': {'loss': 0.5491, 'accuracy': 0.7285}, 'time': {'elapsed_time': '0:06:00.740279'}}
+Dev results:
+{'BOOLQ': {'loss': 0.5893, 'accuracy': 0.7064}, 'time': {'elapsed_time': '0:00:20.735783'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'BOOLQ': {'loss': 0.3927, 'accuracy': 0.8301}, 'time': {'elapsed_time': '0:06:04.225352'}}
+Dev results:
+{'BOOLQ': {'loss': 0.6111, 'accuracy': 0.7199}, 'time': {'elapsed_time': '0:00:20.730341'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'BOOLQ': {'loss': 0.2322, 'accuracy': 0.9081}, 'time': {'elapsed_time': '0:06:00.309298'}}
+Dev results:
+{'BOOLQ': {'loss': 0.7882, 'accuracy': 0.715}, 'time': {'elapsed_time': '0:00:20.878067'}}
+---
+Epoch 5:
+Train results:
+{'BOOLQ': {'loss': 0.1386, 'accuracy': 0.9487}, 'time': {'elapsed_time': '0:06:01.485878'}}
+Dev results:
+{'BOOLQ': {'loss': 0.8522, 'accuracy': 0.7125}, 'time': {'elapsed_time': '0:00:20.825578'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 2.4541, 'accuracy': 0.5515}, 'time': {'elapsed_time': '0:01:18.365689'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7225, 'accuracy': 0.7528}, 'time': {'elapsed_time': '0:11:48.427984'}}
+Dev results:
+{'Circa': {'loss': 0.5862, 'accuracy': 0.797}, 'time': {'elapsed_time': '0:01:18.370655'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.4573, 'accuracy': 0.8453}, 'time': {'elapsed_time': '0:11:45.394642'}}
+Dev results:
+{'Circa': {'loss': 0.5714, 'accuracy': 0.8062}, 'time': {'elapsed_time': '0:01:18.298932'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3032, 'accuracy': 0.8974}, 'time': {'elapsed_time': '0:11:48.211946'}}
+Dev results:
+{'Circa': {'loss': 0.6413, 'accuracy': 0.8143}, 'time': {'elapsed_time': '0:01:18.317528'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2024, 'accuracy': 0.9329}, 'time': {'elapsed_time': '0:11:46.272746'}}
+Dev results:
+{'Circa': {'loss': 0.7356, 'accuracy': 0.7976}, 'time': {'elapsed_time': '0:01:18.306092'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1451, 'accuracy': 0.9513}, 'time': {'elapsed_time': '0:11:46.973205'}}
+Dev results:
+{'Circa': {'loss': 0.7586, 'accuracy': 0.8052}, 'time': {'elapsed_time': '0:01:18.355021'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+{'Circa': {'Yes': 0, 'Probably yes / sometimes yes': 3, 'Yes, subject to some conditions': 5, 'No': 1, 'Probably no': 4, 'In the middle, neither yes nor no': 2}}
+Test results:
+{'Circa': {'loss': 0.6399, 'accuracy': 0.8178, 'confusion_matrix': [[2595, 236, 17, 53, 9, 11], [230, 1871, 20, 10, 45, 9], [24, 30, 43, 10, 4, 4], [112, 17, 6, 107, 2, 13], [35, 143, 7, 7, 25, 1], [47, 12, 3, 9, 2, 423]], 'f1_scores': [0.8702213279678068, 0.8326657765910103, 0.4075829383886256, 0.4724061810154525, 0.1639344262295082, 0.884012539184953]}, 'time': {'elapsed_time': '0:01:18.382117'}}
+Testing finished
+Saving results..
+Results saved
