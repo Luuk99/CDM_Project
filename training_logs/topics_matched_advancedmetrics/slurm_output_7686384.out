@@ -1,0 +1,79 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Test scenario: 0
+Auxilary tasks: ['TOPICS']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [5e-05, 2e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+Advanced metrics: True
+Pretrain: False
+-----------------------------
+Loading datasets..
+Pre-loading annotations for most important word in answer
+[nltk_data] Downloading package wordnet to /home/lcur0362/nltk_data...
+Pre-loading annotations for topics in answer
+[nltk_data]   Package wordnet is already up-to-date!
+After removing empty topics, we have 12068; 4021; and 4018 samples for (respectively) train, dev, test sets for topic aux task
+Loading model..
+Model loaded
+Datasets loaded for training
+Start training on datasets:  ('Circa', 'TOPICS')
+Starting training..
+Epoch 0:
+Dev results:
+{'TOPICS': {'loss': 3.0004, 'accuracy': 0.1164}, 'Circa': {'loss': 1.7992, 'accuracy': 0.1496}, 'time': {'elapsed_time': '0:01:56.447999'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7712, 'accuracy': 0.7368}, 'TOPICS': {'loss': 1.5706, 'accuracy': 0.5284}, 'time': {'elapsed_time': '0:19:20.792759'}}
+Dev results:
+{'Circa': {'loss': 0.6369, 'accuracy': 0.7897}, 'TOPICS': {'loss': 0.9018, 'accuracy': 0.7625}, 'time': {'elapsed_time': '0:02:09.676451'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'TOPICS': {'loss': 0.7192, 'accuracy': 0.8092}, 'Circa': {'loss': 0.5399, 'accuracy': 0.82}, 'time': {'elapsed_time': '0:19:18.851321'}}
+Dev results:
+{'Circa': {'loss': 0.6041, 'accuracy': 0.8042}, 'TOPICS': {'loss': 0.7139, 'accuracy': 0.8155}, 'time': {'elapsed_time': '0:02:09.517815'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3985, 'accuracy': 0.8668}, 'TOPICS': {'loss': 0.4518, 'accuracy': 0.8785}, 'time': {'elapsed_time': '0:19:18.195695'}}
+Dev results:
+{'Circa': {'loss': 0.6135, 'accuracy': 0.8108}, 'TOPICS': {'loss': 0.612, 'accuracy': 0.8452}, 'time': {'elapsed_time': '0:02:09.632585'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'TOPICS': {'loss': 0.3148, 'accuracy': 0.916}, 'Circa': {'loss': 0.2861, 'accuracy': 0.9043}, 'time': {'elapsed_time': '0:19:16.433275'}}
+Dev results:
+{'Circa': {'loss': 0.6741, 'accuracy': 0.8079}, 'TOPICS': {'loss': 0.604, 'accuracy': 0.8492}, 'time': {'elapsed_time': '0:02:09.718475'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.2176, 'accuracy': 0.9284}, 'TOPICS': {'loss': 0.2253, 'accuracy': 0.9403}, 'time': {'elapsed_time': '0:19:17.350591'}}
+Dev results:
+{'Circa': {'loss': 0.7511, 'accuracy': 0.8209}, 'TOPICS': {'loss': 0.6144, 'accuracy': 0.8574}, 'time': {'elapsed_time': '0:02:10.071346'}}
+Saving new best model..
+New best model saved
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+{'Circa': {'Yes': 0, 'Probably yes / sometimes yes': 3, 'Yes, subject to some conditions': 5, 'No': 1, 'Probably no': 4, 'In the middle, neither yes nor no': 2}, 'TOPICS': ['knowledge', 'amount', 'group', 'communication', 'quantity', 'event', 'physical_entity', 'cause', 'physical_object', 'abstraction', 'artifact', 'whole', 'organism', 'unit', 'attribute', 'human_action', 'being', 'living_thing']}
+Test results:
+{'TOPICS': {'loss': 0.6698, 'accuracy': 0.8471}, 'Circa': {'loss': 0.8039, 'accuracy': 0.8074, 'confusion_matrix': [[2534, 282, 3, 32, 8, 10], [268, 1825, 8, 5, 36, 5], [34, 35, 35, 7, 3, 3], [122, 23, 1, 94, 5, 14], [37, 153, 1, 3, 25, 2], [42, 21, 1, 9, 1, 409]], 'f1_scores': [0.8581103962072468, 0.8136424431564868, 0.42168674698795183, 0.4596577017114915, 0.16722408026755856, 0.8833693304535638]}, 'time': {'elapsed_time': '0:02:08.633866'}}
+Testing finished
+Saving results..
+Results saved
