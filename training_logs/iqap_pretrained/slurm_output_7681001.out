@@ -1,0 +1,115 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Test scenario: 0
+Auxilary tasks: ['IQAP']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05, 3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+Advanced metrics: True
+Pretrain: True
+-----------------------------
+Loading datasets..
+Loading model..
+Model loaded
+Datasets loaded for training:  ('Circa',)
+Start pretraining on datasets:  ('IQAP',)
+Starting training..
+Epoch 0:
+Dev results:
+{'IQAP': {'loss': 1.8255, 'accuracy': 0.1562}, 'time': {'elapsed_time': '0:00:00.576666'}}
+Epoch 1:
+Train results:
+{'IQAP': {'loss': 1.5818, 'accuracy': 0.34}, 'time': {'elapsed_time': '0:00:05.039639'}}
+Dev results:
+{'IQAP': {'loss': 1.6904, 'accuracy': 0.0938}, 'time': {'elapsed_time': '0:00:00.354020'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'IQAP': {'loss': 1.3614, 'accuracy': 0.4333}, 'time': {'elapsed_time': '0:00:05.066601'}}
+Dev results:
+{'IQAP': {'loss': 1.5454, 'accuracy': 0.1562}, 'time': {'elapsed_time': '0:00:00.354961'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'IQAP': {'loss': 1.1896, 'accuracy': 0.6}, 'time': {'elapsed_time': '0:00:05.052562'}}
+Dev results:
+{'IQAP': {'loss': 1.6234, 'accuracy': 0.3438}, 'time': {'elapsed_time': '0:00:00.357180'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'IQAP': {'loss': 0.8461, 'accuracy': 0.7867}, 'time': {'elapsed_time': '0:00:05.061738'}}
+Dev results:
+{'IQAP': {'loss': 1.6879, 'accuracy': 0.25}, 'time': {'elapsed_time': '0:00:00.359184'}}
+---
+Epoch 5:
+Train results:
+{'IQAP': {'loss': 0.5275, 'accuracy': 0.9333}, 'time': {'elapsed_time': '0:00:05.034122'}}
+Dev results:
+{'IQAP': {'loss': 2.0887, 'accuracy': 0.1875}, 'time': {'elapsed_time': '0:00:00.357676'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 1.9213, 'accuracy': 0.2324}, 'time': {'elapsed_time': '0:01:09.590483'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7199, 'accuracy': 0.7518}, 'time': {'elapsed_time': '0:11:06.271542'}}
+Dev results:
+{'Circa': {'loss': 0.6116, 'accuracy': 0.7907}, 'time': {'elapsed_time': '0:01:15.607365'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.4554, 'accuracy': 0.85}, 'time': {'elapsed_time': '0:11:43.819709'}}
+Dev results:
+{'Circa': {'loss': 0.5706, 'accuracy': 0.8164}, 'time': {'elapsed_time': '0:01:17.608405'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3049, 'accuracy': 0.8993}, 'time': {'elapsed_time': '0:11:50.530758'}}
+Dev results:
+{'Circa': {'loss': 0.6255, 'accuracy': 0.8215}, 'time': {'elapsed_time': '0:01:17.520233'}}
+Saving new best model..
+New best model saved
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2082, 'accuracy': 0.9294}, 'time': {'elapsed_time': '0:11:46.640469'}}
+Dev results:
+{'Circa': {'loss': 0.659, 'accuracy': 0.7933}, 'time': {'elapsed_time': '0:01:17.527389'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1495, 'accuracy': 0.9494}, 'time': {'elapsed_time': '0:11:52.009402'}}
+Dev results:
+{'Circa': {'loss': 0.8354, 'accuracy': 0.8099}, 'time': {'elapsed_time': '0:01:17.800003'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+{'Circa': {'Yes': 0, 'Probably yes / sometimes yes': 3, 'Yes, subject to some conditions': 5, 'No': 1, 'Probably no': 4, 'In the middle, neither yes nor no': 2}}
+Test results:
+{'Circa': {'loss': 0.6065, 'accuracy': 0.8224, 'confusion_matrix': [[2487, 304, 14, 58, 4, 14], [160, 2003, 14, 7, 21, 4], [21, 53, 45, 6, 4, 8], [104, 25, 9, 91, 1, 10], [17, 170, 7, 4, 21, 1], [39, 14, 0, 5, 2, 445]], 'f1_scores': [0.8712559117183395, 0.8384261197153621, 0.3982300884955752, 0.4428223844282238, 0.15384615384615385, 0.9017223910840932]}, 'time': {'elapsed_time': '0:01:17.558644'}}
+Testing finished
+Saving results..
+Results saved

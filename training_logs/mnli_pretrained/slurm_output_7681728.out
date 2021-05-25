@@ -1,0 +1,113 @@
+-----TRAINING PARAMETERS-----
+Model version: QA
+Labels: strict
+Setting: matched
+Test scenario: None
+Auxilary tasks: ['MNLI']
+Auxilary task probing: False
+PyTorch device: cuda
+Max epochs: 5
+Patience: 3
+Learning rates: [3e-05, 3e-05]
+Batch size: 8
+Results directory: ./mtl_results
+Progress bar: False
+Advanced metrics: True
+Pretrain: True
+-----------------------------
+Loading model..
+Model loaded
+Loading datasets..
+Datasets loaded for training:  ('Circa',)
+Datasets loaded for pretraining:  ('MNLI',)
+Start pretraining on datasets:  ('MNLI',)
+Starting training..
+Epoch 0:
+Dev results:
+{'MNLI': {'loss': 1.7202, 'accuracy': 0.3169}, 'time': {'elapsed_time': '0:00:59.202659'}}
+Epoch 1:
+Train results:
+{'MNLI': {'loss': 0.5655, 'accuracy': 0.7717}, 'time': {'elapsed_time': '4:06:22.997723'}}
+Dev results:
+{'MNLI': {'loss': 0.4998, 'accuracy': 0.8009}, 'time': {'elapsed_time': '0:00:58.734461'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'MNLI': {'loss': 0.4231, 'accuracy': 0.8368}, 'time': {'elapsed_time': '4:04:08.394201'}}
+Dev results:
+{'MNLI': {'loss': 0.4831, 'accuracy': 0.8141}, 'time': {'elapsed_time': '0:00:59.438387'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'MNLI': {'loss': 0.34, 'accuracy': 0.8723}, 'time': {'elapsed_time': '4:04:01.978621'}}
+Dev results:
+{'MNLI': {'loss': 0.5598, 'accuracy': 0.8027}, 'time': {'elapsed_time': '0:00:59.347227'}}
+---
+Epoch 4:
+Train results:
+{'MNLI': {'loss': 0.2791, 'accuracy': 0.8968}, 'time': {'elapsed_time': '4:04:17.864058'}}
+Dev results:
+{'MNLI': {'loss': 0.5715, 'accuracy': 0.808}, 'time': {'elapsed_time': '0:00:59.261540'}}
+---
+Epoch 5:
+Train results:
+{'MNLI': {'loss': 0.2314, 'accuracy': 0.9157}, 'time': {'elapsed_time': '4:04:42.534440'}}
+Dev results:
+{'MNLI': {'loss': 0.6039, 'accuracy': 0.8068}, 'time': {'elapsed_time': '0:00:59.405266'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Start training on datasets:  ('Circa',)
+Starting training..
+Epoch 0:
+Dev results:
+{'Circa': {'loss': 5.7754, 'accuracy': 0.1983}, 'time': {'elapsed_time': '0:01:18.164982'}}
+Epoch 1:
+Train results:
+{'Circa': {'loss': 0.7741, 'accuracy': 0.759}, 'time': {'elapsed_time': '0:11:32.841219'}}
+Dev results:
+{'Circa': {'loss': 0.6463, 'accuracy': 0.8151}, 'time': {'elapsed_time': '0:01:17.194439'}}
+Saving new best model..
+New best model saved
+---
+Epoch 2:
+Train results:
+{'Circa': {'loss': 0.4604, 'accuracy': 0.8593}, 'time': {'elapsed_time': '0:11:32.544488'}}
+Dev results:
+{'Circa': {'loss': 0.5533, 'accuracy': 0.8295}, 'time': {'elapsed_time': '0:01:17.115653'}}
+Saving new best model..
+New best model saved
+---
+Epoch 3:
+Train results:
+{'Circa': {'loss': 0.3069, 'accuracy': 0.9034}, 'time': {'elapsed_time': '0:11:30.097275'}}
+Dev results:
+{'Circa': {'loss': 0.6348, 'accuracy': 0.8262}, 'time': {'elapsed_time': '0:01:16.801979'}}
+---
+Epoch 4:
+Train results:
+{'Circa': {'loss': 0.2242, 'accuracy': 0.9269}, 'time': {'elapsed_time': '0:11:32.893533'}}
+Dev results:
+{'Circa': {'loss': 0.7281, 'accuracy': 0.8236}, 'time': {'elapsed_time': '0:01:17.151753'}}
+---
+Epoch 5:
+Train results:
+{'Circa': {'loss': 0.1665, 'accuracy': 0.9456}, 'time': {'elapsed_time': '0:11:34.909696'}}
+Dev results:
+{'Circa': {'loss': 0.7011, 'accuracy': 0.8233}, 'time': {'elapsed_time': '0:01:17.431259'}}
+---
+Training finished
+Loading best model..
+Best model loaded
+Starting testing..
+{'Yes': 0, 'Probably yes / sometimes yes': 3, 'Yes, subject to some conditions': 5, 'No': 1, 'Probably no': 4, 'In the middle, neither yes nor no': 2}
+Test results:
+{'Circa': {'loss': 0.5649, 'accuracy': 0.8333, 'confusion_matrix': [[2690, 181, 4, 24, 3, 30], [225, 1881, 11, 5, 31, 8], [45, 35, 38, 4, 3, 4], [134, 13, 3, 81, 4, 5], [34, 166, 1, 8, 28, 0], [34, 9, 0, 6, 2, 442]], 'f1_scores': [0.8828355759763703, 0.8461538461538461, 0.40860215053763443, 0.44021739130434784, 0.1818181818181818, 0.90020366598778]}, 'time': {'elapsed_time': '0:01:17.360679'}}
+Testing finished
+Saving results..
+Results saved

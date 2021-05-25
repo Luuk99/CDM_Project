@@ -41,8 +41,13 @@ def perform_step(model, optimizer, batch, device, task_idx, train=True, aux_prob
     # get the features of the batch
     input_ids = batch['input_ids'].to(device)
     attention_mask = batch['attention_mask'].to(device)
-    batch_labels = batch['labels'].to(device)
     token_type_ids = batch['token_type_ids'].to(device)
+
+    # When pretraining on SST2, change labels from float to integer.
+    if args.pretrain and batch['labels'].dtype != torch.int64:
+        batch_labels = torch.round(batch['labels']).type(torch.LongTensor).to(device)
+    else:
+        batch_labels = batch['labels'].to(device)
 
     # check whether we are probing
     if aux_probing and (task_idx != 0):
