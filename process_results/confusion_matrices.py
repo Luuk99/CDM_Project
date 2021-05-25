@@ -18,7 +18,7 @@ mpl.use('pgf')
 mpl.rcParams.update({
     "pgf.texsystem": "pdflatex",
     'font.family': 'serif',
-    'font.size': 13,
+    'font.size': 15,
     'text.usetex': True,
     'pgf.rcfonts': False,
 })
@@ -122,7 +122,7 @@ def plot_confusion_matrices(model, output_dir, normalize=True):
         normalize - Whether to normalize the matrices. 
     """
     print("plotting for model: ", model)
-    model_title = model.split("_")[0]
+    model_title = model.split("_")[0].capitalize()
     results_list = metrics[model]["Circa"]["confusion_matrix"]
     target_names = metrics[model]["target_names"]
     target_names = get_shorter_name(target_names)
