@@ -239,11 +239,6 @@ def handle_matched(args, device, path):
     topicLabelCount = 0
     train_set, dev_set, test_set, label_dict = LoadCirca(args, tokenizer)
 
-    # Initialize pretraining
-    if args.pretrain:
-        pretrain_set = {}
-        predev_set = {}
-
     for task in args.aux_tasks:
         if task == 'SST2':
             train_aux_set, dev_aux_set, test_aux_set = LoadSST2(args, tokenizer)
@@ -255,27 +250,12 @@ def handle_matched(args, device, path):
             train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
         elif task == 'TOPICS':
             topicLabelCount = len(label_dict['TOPICS'])
-            pretrain_set[task] = train_set['TOPICS']
-            predev_set[task] = dev_set['TOPICS']
-
-            train_set[task] = train_set['Circa']
-            dev_set[task] = dev_set['Circa']
-            test_set[task] = test_set['Circa']
             continue # TOPICS aux task will be loaded automatically
 
-        # TODO: add all other datasets
-        if args.pretrain:
-            if task == "TOPICS":
-                train_aux_set = train_set['TOPICS']
-                dev_aux_set = dev_set['TOPICS']
-            # Use the auxiliary task for pretraining
-            pretrain_set[task] = train_aux_set
-            predev_set[task] = dev_aux_set
-        else:
-            # Use the auxiliary task for multi-task learning
-            train_set[task] = train_aux_set
-            dev_set[task] = dev_aux_set
-            test_set[task] = test_aux_set
+        # Use the auxiliary task for multi-task learning
+        train_set[task] = train_aux_set
+        dev_set[task] = dev_aux_set
+        test_set[task] = test_aux_set
 
     # load the model
     print('Loading model..')
@@ -289,10 +269,12 @@ def handle_matched(args, device, path):
     print('Datasets loaded for training')
 
     if args.pretrain:
-        pretrain_set = MultiTaskDataloader(dataloaders=pretrain_set)
-        predev_set = MultiTaskDataloader(dataloaders=predev_set)
+        # TODO: It is perhaps better to loop over the datasets...
+        pretrain_set = args.aux_tasks[0]
+        train_set.set_one_task(pretrain_set)
+        dev_set.set_one_task(pretrain_set)
         print('Datasets loaded for pretraining')
-        print('Start pretraining on datasets: ', pretrain_set.tasknames)
+        print('Start pretraining on datasets: ', pretrain_set)
 
         # Pretrain on the auxiliary task, use auxiliary task as dev criterium.
         convergence_data = args.aux_tasks[0]
@@ -300,12 +282,15 @@ def handle_matched(args, device, path):
             args = args,
             model = model,
             optimizers = optimizers,
-            train_set = pretrain_set,
-            dev_set = predev_set,
+            train_set = train_set,
+            dev_set = dev_set,
             device = device,
             path = path,
             convergence_data = convergence_data
         )
+
+        train_set.set_one_task("Circa")
+        dev_set.set_one_task("Circa")
 
     # check if a checkpoint is provided
     if args.checkpoint_path is not None:

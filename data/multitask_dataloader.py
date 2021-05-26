@@ -31,6 +31,18 @@ class MultiTaskDataloader(object):
         self.tasknames, self.sampling_weights = zip(*((k, pow(v, tau) / Z) for k, v in self.dataloader_sizes.items()))
         self.dataiters = {k: cycle(v) for k, v in dataloaders.items()}
 
+        self.train_only_one_task = False
+        self.current_taskname = "Circa"
+
+    def set_one_task(self, current_taskname):
+        """
+        Change the model such that it trains on one specific task
+        Inputs:
+            current_taskname: taskname on which to train on.
+        """
+        self.train_only_one_task = True
+        self.current_taskname = current_taskname
+
     @property
     def dataloader_sizes(self):
         """
@@ -58,9 +70,11 @@ class MultiTaskDataloader(object):
         Outputs:
             batch - Batch from a randomly picked dataloader
         """
-
         for i in range(len(self)):
-            taskname = np.random.choice(self.tasknames, p=self.sampling_weights)
+            if not self.train_only_one_task:
+                taskname = np.random.choice(self.tasknames, p=self.sampling_weights)
+            else:
+                taskname = self.current_taskname
             dataiter = self.dataiters[taskname]
             batch = next(dataiter)
 
