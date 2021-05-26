@@ -47,7 +47,7 @@ usage: main.py [-h] [--model_version MODEL_VERSION] [--labels LABELS] [--setting
 		    [--test_scenario TEST_SCENARIO] [--max_epochs MAX_EPOCHS] [--patience PATIENCE] 
 		    [--lrs LRS] [--batch_size BATCH_SIZE] [--aux_tasks AUX_TASKS] [--aux_probing] 
 		    [--checkpoint_path CHECKPOINT_PATH] [--seed SEED] [--results_dir RESULTS_DIR] 
-		    [--progress_bar]
+		    [--progress_bar] [--pretrain]
 
 optional arguments:
   -h, --help            			Show help message and exit.
@@ -65,6 +65,7 @@ optional arguments:
   --seed SEED					Seed to use for reproducing results. Default is 1234.
   --results_dir RESULTS_DIR			Directory where the training results should be created. Default is './mtl_results'.
   --progress_bar				Use a progress bar indicator for interactive experimentation. Not to be used in conjuction with SLURM jobs.
+  --pretrain 					Pretrains on the auxiliary task, and finetunes on the Circa dataset.
   
 optional arguments related to annotation for our own auxiliary task (see paper section 3.3.6 and appendix A):
   --impwords				If mentioned, Circa dataset will be annotated with most important word in answers.
@@ -82,9 +83,14 @@ optional arguments related to annotation for our own auxiliary task (see paper s
 ```
 
 ## Errors
-* **[Errno 2] No such file or directory: '..\multinli_1.0\multinli_1.0_dev_matched.jsonl'** when using MNLI as the auxilary task.
+* **[Errno 2] No such file or directory: '..\multinli_1.0\multinli_1.0_dev_matched.jsonl'** when using MNLI as the auxiliary task.
 	* Download MultiNLI zip from the official website: https://cims.nyu.edu/~sbowman/multinli/
 	* Extract the ZIP and place the **multinli_1.0** folder in the cache directory as provided by the error message
+* **AttributeError: 'Dataset' object has no attribute 'add_column'** when using TOPICS as the auxiliary task.
+	* Upgrade Datasets package to at least 1.6.2:
+	```bash
+	pip install datasets -U
+	```
 
 ## Authors
 * Luuk Kaandorp - luuk.kaandorp@student.uva.nl
