@@ -36,9 +36,6 @@ Or provide a path to the checkpoint of an earlier run:
 python main.py --checkpoint_path CHECKPOINT_PATH
 ```
 
-## Replicating Results
-TODO: add brief description on how to replicate the results
-
 ## Datasets
 Most datasets are gathered from the [Huggingface](https://huggingface.co/) library and require no manual downloading. The following datasets are exceptions to this:
 * For the IQAP dataset, download the zip from the [official website](http://compprag.christopherpotts.net/iqap.html) and move the csv to the **data/local_datasets/iqap** folder.
