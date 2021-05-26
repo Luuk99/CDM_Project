@@ -255,9 +255,19 @@ def handle_matched(args, device, path):
             train_aux_set, dev_aux_set, test_aux_set = LoadIQAP(args, tokenizer)
         elif task == 'TOPICS':
             topicLabelCount = len(label_dict['TOPICS'])
+            pretrain_set[task] = train_set['TOPICS']
+            predev_set[task] = dev_set['TOPICS']
+
+            train_set[task] = train_set['Circa']
+            dev_set[task] = dev_set['Circa']
+            test_set[task] = test_set['Circa']
             continue # TOPICS aux task will be loaded automatically
+
         # TODO: add all other datasets
         if args.pretrain:
+            if task == "TOPICS":
+                train_aux_set = train_set['TOPICS']
+                dev_aux_set = dev_set['TOPICS']
             # Use the auxiliary task for pretraining
             pretrain_set[task] = train_aux_set
             predev_set[task] = dev_aux_set
