@@ -24,7 +24,6 @@ mpl.rcParams.update({
 })
 import matplotlib.pyplot as plt
 
-
 def get_results(filepath):
     """
     Reads the results from a Slurm output file. 
@@ -50,12 +49,12 @@ def get_results(filepath):
 
 def check_for_metrics(filepath):
     """
-    Gets the correct name from a model slurm output.  
+    Checks wheter a file contains metrics.  
     Args:
     Inputs:
         filepath - Slurm output file from training.
     Outputs:
-        name - the name of the model. 
+        The name of the model. 
     """
     with open(filepath) as f:
         if 'Advanced metrics: True' in f.read():
@@ -77,7 +76,6 @@ def get_metrics(log_folder):
     """
 
     metrics = {}
-
     pathlist = Path(log_folder).glob('**/*.out')
 
     for path in pathlist:
