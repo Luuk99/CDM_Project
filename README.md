@@ -10,6 +10,7 @@ This repository consists of the following key scripts:
 * **multi_task/bert_mtl.py**: this script contains the Multi-Task adaption of the BERT model.
 * **data/**: contains all dataloader classes for the different datasets.
 * **data/multitask_dataloader**: script for combining multiple datasets into a single dataloader. Creates batches containing only a single task, but picks each batch from one of the datasets randomly.
+The accompanying research paper of this project can be found in this repository as **Research_Paper.pdf**.
 
 ## Prerequisites
 * Anaconda. Available at: https://www.anaconda.com/distribution/
